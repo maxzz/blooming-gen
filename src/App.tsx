@@ -22,11 +22,11 @@ function App() {
                     <svg className="" viewBox="-200 -200 400 400">
 
                         <circle cx={point1.x} cy={point1.y} r={radius} fill='red' />
-                        <circle cx={point2.x} cy={point2.y} r={radius} fill='#2000ff' />
-                        <circle cx={pointc.x} cy={pointc.y} r={radius} fill='#0020ff' />
+                        <circle cx={point2.x} cy={point2.y} r={radius} fill='blue' />
+                        <circle cx={pointc.x} cy={pointc.y} r={radius} fill='lime' />
 
-                        <line x={point1.x} y={point1.y} x1={pointc.x} y1={pointc.y} stroke="red" />
-                        {/* <line x={pointc.x} y={pointc.y} x1={point2.x} y1={point2.y} stroke="red" /> */}
+                        <line x1={point1.x} y1={point1.y} x2={pointc.x} y2={pointc.y} stroke="red" />
+                        <line x1={pointc.x} y1={pointc.y} x2={point2.x} y2={point2.y} stroke="blue" />
 
                         <path d={`M ${point1.x} ${point1.y} Q ${pointc.x} ${pointc.y} ${point2.x} ${point2.y}`} stroke="black" fill="transparent"/>
                     </svg>
