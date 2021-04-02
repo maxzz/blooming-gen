@@ -4,7 +4,7 @@ import SimpleCurve from './components/SimpleCurve';
 
 function App() {
     return (
-        <div className="App h-screen bg-gray-100 debug">
+        <div className="App h-screen bg-gray-100">
             <SimpleCurve ></SimpleCurve >
         </div>
     );
