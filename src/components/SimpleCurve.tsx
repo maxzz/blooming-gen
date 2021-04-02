@@ -33,7 +33,13 @@ function SimpleCurve() {
         <div className="max-w-md mx-auto bg-indigo-100 h-full">
             <div className="w-96 h-96 border border-dotted border-red-800">
                 <svg className="bg-red-300" viewBox="-200 -200 400 400">
-                    <use href="#global-grid" x="-200" y="-200" />
+                    {/* <use href="#globalgrid" x="-200" y="-200" /> */}
+
+                    <svg id="globalgrid" width="100%" height="100%" x="-200" y="-200">
+                        <rect width="100%" height="100%" fill="url(#largeGrid)" />
+                    </svg>
+
+                    {/* <rect width="100%" height="100%" fill="url(#largeGrid)" /> */}
 
                     <circle cx={point1.x} cy={point1.y} r={radius} fill='red' />
                     <circle cx={point2.x} cy={point2.y} r={radius} fill='blue' />
