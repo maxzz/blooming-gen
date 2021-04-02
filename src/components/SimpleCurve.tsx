@@ -78,7 +78,7 @@ function generateCurvePoints(start: XY, step: WH, steps: number): PathPoint[] {
 
 function SimpleCurve() {
 
-    let pathPoints = generateCurvePoints({x: -200, y: 0}, {w: 50, h: 100}, 8);
+    let pathPoints = generateCurvePoints({x: -200, y: 100}, {w: 50, h: 150}, 8);
 
     // let pathPoints: PathPoint[] = [
     //     { c: 'M', d: [{ x: 0, y: 0 },] },
@@ -87,7 +87,7 @@ function SimpleCurve() {
 
     return (
         <div className="max-w-md mx-auto bg-indigo-100 h-full">
-            <div className="w-96 h-96 border border-dotted border-red-800">
+            <div className="mx-auto w-96 h-96 border border-dotted border-red-800">
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
                     <DebugGrid x={-200} y={-200} visible={true}/>
                     <PointMarkers points={pathPoints} />
