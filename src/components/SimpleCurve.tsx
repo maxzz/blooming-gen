@@ -32,7 +32,8 @@ function SimpleCurve() {
     return (
         <div className="max-w-md mx-auto bg-indigo-100 h-full">
             <div className="w-96 h-96 border border-dotted border-red-800">
-                <svg className="debug-grid bg-red-300" viewBox="-200 -200 400 400">
+                <svg className="bg-red-300" viewBox="-200 -200 400 400">
+                    <use href="#global-grid" x="-200" y="-200" />
 
                     <circle cx={point1.x} cy={point1.y} r={radius} fill='red' />
                     <circle cx={point2.x} cy={point2.y} r={radius} fill='blue' />
