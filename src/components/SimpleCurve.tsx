@@ -63,8 +63,9 @@ function makePath(points: PathPoint[]): string {
     return points.map(point => `${point.c} ${point.d?.map(xy => `${xy.x} ${xy.y}`) || ''}`).join(' ');
 }
 
-function generateCurvePoints(start: XY, step: WH, steps: number): PathPoint[] {
+function generateCurvePoints(start: XY, end: XY, steps: number): PathPoint[] {
     let pathPoints: PathPoint[] = [];
+    let step: WH = {w: (end.x - start.x) / steps, h: end.y - start.y};
     let prev: XY | undefined;
     pathPoints.push({ c: 'M', d: [(prev = start)] });
     for (let i = 0; i < steps; i++) {
@@ -78,12 +79,8 @@ function generateCurvePoints(start: XY, step: WH, steps: number): PathPoint[] {
 
 function SimpleCurve() {
 
-    let pathPoints = generateCurvePoints({x: -200, y: 100}, {w: 50, h: 150}, 8);
-
-    // let pathPoints: PathPoint[] = [
-    //     { c: 'M', d: [{ x: 0, y: 0 },] },
-    //     { c: 'Q', d: [{ x: 100, y: -160 }, { x: 180, y: 0 },] },
-    // ];
+    let pathPoints = generateCurvePoints({x: -200, y: -100}, {x: 200, y: -150}, 4);
+    let controlPoints = makePath(pathPoints);
 
     return (
         <div className="max-w-md mx-auto bg-indigo-100 h-full">
@@ -92,7 +89,7 @@ function SimpleCurve() {
                     <DebugGrid x={-200} y={-200} visible={true}/>
                     <PointMarkers points={pathPoints} />
                     <LineMarkers points={pathPoints} />
-                    <path d={`${makePath(pathPoints)}`} stroke="black" fill="transparent" />
+                    <path d={controlPoints} stroke="black" fill="transparent" />
                 </svg>
             </div>
             <svg viewBox="0 0 1366 768" fill="none" stroke="green">
