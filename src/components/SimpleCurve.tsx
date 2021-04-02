@@ -34,26 +34,9 @@ function makeLines(points: PathPoint[]) {
     return lines;
 }
 
-interface LineMarkersProps<T = SVGElement> extends React.SVGAttributes<T> {
-    pathPoints: PathPoint[];
-};
-
-// type LineMarkersProps = {
-//     points: PathPoint[];
-//     [key: keyof React.SVGAttributes<SVGElement>]: any;
-// };
-
-// type LineMarkersProps = {
-//     points: PathPoint[];
-//     [key: string]: any;
-// };
-
-// type LineMarkersProps = {
-//     points: PathPoint[];
-// } & React.SVGAttributes<SVGElement>;
-
-function LineMarkers(props: LineMarkersProps & React.SVGAttributes<SVGElement>) {
-    const {pathPoints, ...rest} = props;
+function LineMarkers(props: {pathPoints: PathPoint[]} & React.SVGAttributes<SVGElement>) {
+    let {pathPoints, ...rest} = props;
+    rest = {stroke: "#ff000080", strokeDasharray:"3,3", ...rest};
     const lines = makeLines(pathPoints);
     return (
         <>
@@ -62,13 +45,12 @@ function LineMarkers(props: LineMarkersProps & React.SVGAttributes<SVGElement>) 
             ))}
         </>
     );
-
 }
 
-function PointMarkers({points}: {points: PathPoint[]}) {
+function PointMarkers({pathPoints}: {pathPoints: PathPoint[]}) {
     return (
         <>
-            {points.map((point, index) => {
+            {pathPoints.map((point, index) => {
                 return <React.Fragment key={index}> {point.d?.map((xy, indexXY) => (
                     <circle cx={xy.x} cy={xy.y} r={3} fill='red' key={`${index}.${indexXY}`}>
                         <title>{xy.x}, {xy.y}</title>
@@ -107,8 +89,9 @@ function SimpleCurve() {
             <div className="mx-auto w-96 h-96 border border-dotted border-red-800">
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
                     <DebugGrid x={-200} y={-200} visible={true}/>
-                    <PointMarkers points={pathPoints} />
-                    <LineMarkers pathPoints={pathPoints} stroke="#ff000080" strokeDasharray="3,3"/>
+                    <PointMarkers pathPoints={pathPoints} />
+                    <LineMarkers pathPoints={pathPoints} />
+                    {/* <LineMarkers pathPoints={pathPoints} stroke="#ff000080" strokeDasharray="3,3"/> */}
                     <path d={controlPoints} stroke="black" fill="transparent" />
                 </svg>
             </div>
