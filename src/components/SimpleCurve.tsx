@@ -27,10 +27,14 @@ function PointMarkers({points}: {points: PathPoint[]}) {
 }
 
 function PointLines({points}: {points: PathPoint[]}) {
-
     const lines = makeLines(points);
-    console.log('lines', lines);
-    
+    return (
+        <>
+            {lines.map((line, index) => (
+                <line x1={line.a.x} y1={line.a.y} x2={line.b.x} y2={line.b.y} stroke="#ff000080" strokeDasharray="3,3" key={index}/>
+            ))}
+        </>
+    );
 
     function makeLines(points: PathPoint[]) {
         const lines: {a: XY, b: XY}[] = [];
@@ -47,15 +51,7 @@ function PointLines({points}: {points: PathPoint[]}) {
             }
         }
         return lines;
-   }
-
-    return (
-        <>
-            {lines.map((line, index) => (
-                <line x1={line.a.x} y1={line.a.y} x2={line.b.x} y2={line.b.y} stroke="red"  key={index}/>
-            ))}
-        </>
-    );
+    }
 }
 
 function SimpleCurve() {
