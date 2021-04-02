@@ -16,7 +16,11 @@ function PointMarkers({points}: {points: PathPoint[]}) {
     return (
         <>
             {points.map(point => {
-                return <> {point.d?.map(xy => (<circle cx={xy.x} cy={xy.y} r={3} fill='red' />))} </>
+                return <> {point.d?.map(xy => (
+                    <circle cx={xy.x} cy={xy.y} r={3} fill='red'>
+                        <title>{xy.x}, {xy.y}</title>
+                    </circle>
+                ))} </>
             })}
         </>
     );
