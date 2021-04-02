@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import SvgGrid from './SvgGrid';
+import DebugGrid from './SvgGrid';
 
 type XY = {
     x: number;
@@ -26,7 +26,7 @@ function PointMarkers({points}: {points: PathPoint[]}) {
     );
 }
 
-function PointLines({points}: {points: PathPoint[]}) {
+function LineMarkers({points}: {points: PathPoint[]}) {
     const lines = makeLines(points);
     return (
         <>
@@ -69,9 +69,9 @@ function SimpleCurve() {
         <div className="max-w-md mx-auto bg-indigo-100 h-full">
             <div className="w-96 h-96 border border-dotted border-red-800">
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
-                    <SvgGrid x={-200} y={-200}/>
+                    <DebugGrid x={-200} y={-200} visible={true}/>
                     <PointMarkers points={pathPoints} />
-                    <PointLines points={pathPoints} />
+                    <LineMarkers points={pathPoints} />
                     <path d={`${makePath(pathPoints)}`} stroke="black" fill="transparent" />
                 </svg>
             </div>
