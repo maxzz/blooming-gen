@@ -15,13 +15,49 @@ type PathPoint = {
 function PointMarkers({points}: {points: PathPoint[]}) {
     return (
         <>
-            {points.map(point => {
-                return <> {point.d?.map(xy => (
-                    <circle cx={xy.x} cy={xy.y} r={3} fill='red'>
+            {points.map((point, index) => {
+                return <React.Fragment key={index}> {point.d?.map((xy, indexXY) => (
+                    <circle cx={xy.x} cy={xy.y} r={3} fill='red' key={`${index}.${indexXY}`}>
                         <title>{xy.x}, {xy.y}</title>
                     </circle>
-                ))} </>
+                ))} </React.Fragment>
             })}
+        </>
+    );
+}
+
+function PointLines({points}: {points: PathPoint[]}) {
+
+    const lines = makeLines(points);
+    console.log('lines', lines);
+    
+
+    function makeLines(points: PathPoint[]) {
+        const lines: {a: XY, b: XY}[] = [];
+        let prev: XY | undefined;
+        for (let point of points) {
+            if (!prev) {
+                prev = point.d && point.d[0];
+                continue;
+            }
+            if (point.d && point.d.length > 0) {
+                lines.push({a: prev, b: (prev = point.d[0])});
+                if (point.d.length > 1) {
+                    lines.push({a: prev, b: (prev = point.d[1])});
+                    if (point.d.length > 2) {
+                        lines.push({a: prev, b: (prev = point.d[2])});
+                    }
+                }
+            }
+        }
+        return lines;
+   }
+
+    return (
+        <>
+            {lines.map((line, index) => (
+                <line x1={line.a.x} y1={line.a.y} x2={line.b.x} y2={line.b.y} stroke="red"  key={index}/>
+            ))}
         </>
     );
 }
@@ -38,12 +74,12 @@ function SimpleCurve() {
     };
     const pointc = {
         x: 100,
-        y: -180,
+        y: -160,
     };
 
     let pathPoints: PathPoint[] = [
         { c: 'M', d: [{ x: 0, y: 0 },] },
-        { c: 'Q', d: [{ x: 100, y: -180 }, { x: 180, y: 0 },] },
+        { c: 'Q', d: [{ x: 100, y: -160 }, { x: 180, y: 0 },] },
     ];
     function makePath(points: PathPoint[]): string {
         return points.map(point => `${point.c} ${point.d?.map(xy => `${xy.x} ${xy.y}`) || ''}`).join(' ');
@@ -63,8 +99,10 @@ function SimpleCurve() {
 
                     <PointMarkers points={pathPoints} />
 
-                    <line x1={point1.x} y1={point1.y} x2={pointc.x} y2={pointc.y} stroke="red" />
-                    <line x1={pointc.x} y1={pointc.y} x2={point2.x} y2={point2.y} stroke="blue" />
+                    {/* <line x1={point1.x} y1={point1.y} x2={pointc.x} y2={pointc.y} stroke="red" />
+                    <line x1={pointc.x} y1={pointc.y} x2={point2.x} y2={point2.y} stroke="blue" /> */}
+
+                    <PointLines points={pathPoints} />
 
                     {/* <path d={`M ${point1.x} ${point1.y} Q ${pointc.x} ${pointc.y} ${point2.x} ${point2.y}`} stroke="black" fill="transparent" /> */}
                     <path d={`${makePath(pathPoints)}`} stroke="black" fill="transparent" />
