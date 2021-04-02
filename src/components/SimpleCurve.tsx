@@ -34,8 +34,8 @@ function makeLines(points: PathPoint[]) {
     return lines;
 }
 
-interface LineMarkersProps {
-    points: PathPoint[];
+interface LineMarkersProps<T = SVGElement> extends React.SVGAttributes<T> {
+    pathPoints: PathPoint[];
 };
 
 // type LineMarkersProps = {
@@ -53,8 +53,8 @@ interface LineMarkersProps {
 // } & React.SVGAttributes<SVGElement>;
 
 function LineMarkers(props: LineMarkersProps & React.SVGAttributes<SVGElement>) {
-    const {points, ...rest} = props;
-    const lines = makeLines(points);
+    const {pathPoints, ...rest} = props;
+    const lines = makeLines(pathPoints);
     return (
         <>
             {lines.map((line, index) => (
@@ -108,7 +108,7 @@ function SimpleCurve() {
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
                     <DebugGrid x={-200} y={-200} visible={true}/>
                     <PointMarkers points={pathPoints} />
-                    <LineMarkers points={pathPoints} stroke="#ff000080" strokeDasharray="3,3"/>
+                    <LineMarkers pathPoints={pathPoints} stroke="#ff000080" strokeDasharray="3,3"/>
                     <path d={controlPoints} stroke="black" fill="transparent" />
                 </svg>
             </div>
