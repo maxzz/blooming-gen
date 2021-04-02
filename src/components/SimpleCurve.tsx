@@ -34,16 +34,25 @@ function makeLines(points: PathPoint[]) {
     return lines;
 }
 
-type LineMarkersProps = {
+interface LineMarkersProps {
     points: PathPoint[];
-    [key: string]: any;
 };
+
+// type LineMarkersProps = {
+//     points: PathPoint[];
+//     [key: keyof React.SVGAttributes<SVGElement>]: any;
+// };
+
+// type LineMarkersProps = {
+//     points: PathPoint[];
+//     [key: string]: any;
+// };
 
 // type LineMarkersProps = {
 //     points: PathPoint[];
 // } & React.SVGAttributes<SVGElement>;
 
-function LineMarkers(props: LineMarkersProps) {
+function LineMarkers(props: LineMarkersProps & React.SVGAttributes<SVGElement>) {
     const {points, ...rest} = props;
     const lines = makeLines(points);
     return (
@@ -90,7 +99,7 @@ function generateCurvePoints(start: XY, end: XY, steps: number): PathPoint[] {
 
 function SimpleCurve() {
 
-    let pathPoints = generateCurvePoints({x: -200, y: -100}, {x: 200, y: -150}, 4);
+    let pathPoints: PathPoint[] = generateCurvePoints({x: -200, y: -100}, {x: 200, y: -150}, 4);
     let controlPoints = makePath(pathPoints);
 
     return (
