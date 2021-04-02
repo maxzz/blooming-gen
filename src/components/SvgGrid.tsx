@@ -1,8 +1,8 @@
 import React from 'react';
 
-const SvgGrid = () => {
+const SvgGrid = ({x, y}: {x: number, y: number}) => {
     return (
-        <svg width="100%" height="100%" x="-200" y="-200">
+        <svg width="100%" height="100%" x={x || 0} y={y || 0}>
             <defs>
                 <pattern id="smallGrid" width="5" height="5" patternUnits="userSpaceOnUse">
                     <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#80808020" strokeWidth=".5" />
