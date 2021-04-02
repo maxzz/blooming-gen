@@ -7,8 +7,13 @@ type XY = {
     y: number;
 }
 
+type WH = { // Width and Height
+    w: number;
+    h: number;
+}
+
 type PathPoint = {
-    c: string;
+    c: 'M' | 'Q';
     d?: XY[];
 }
 
@@ -58,12 +63,27 @@ function makePath(points: PathPoint[]): string {
     return points.map(point => `${point.c} ${point.d?.map(xy => `${xy.x} ${xy.y}`) || ''}`).join(' ');
 }
 
+function generateCurvePoints(start: XY, step: WH, steps: number): PathPoint[] {
+    let pathPoints: PathPoint[] = [];
+    let prev: XY | undefined;
+    pathPoints.push({ c: 'M', d: [(prev = start)] });
+    for (let i = 0; i < steps; i++) {
+        let a: XY = {x: prev.x + step.w / 2, y: -step.h};
+        let b: XY = {x: prev.x + step.w, y: prev.y};
+        pathPoints.push({ c: 'Q', d: [a, b] });
+        prev = b;
+    }
+    return pathPoints;
+}
+
 function SimpleCurve() {
 
-    let pathPoints: PathPoint[] = [
-        { c: 'M', d: [{ x: 0, y: 0 },] },
-        { c: 'Q', d: [{ x: 100, y: -160 }, { x: 180, y: 0 },] },
-    ];
+    let pathPoints = generateCurvePoints({x: -200, y: 0}, {w: 50, h: 100}, 8);
+
+    // let pathPoints: PathPoint[] = [
+    //     { c: 'M', d: [{ x: 0, y: 0 },] },
+    //     { c: 'Q', d: [{ x: 100, y: -160 }, { x: 180, y: 0 },] },
+    // ];
 
     return (
         <div className="max-w-md mx-auto bg-indigo-100 h-full">
