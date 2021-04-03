@@ -36,7 +36,7 @@ namespace PathPoints {
     }
 
     function nonNullish<T>(value: T): value is NonNullable<T> {
-        return value !== undefined && value !== null
+        return Boolean(value)
     }
 
     export function toPoints(pathPoints: PathPoint[]): XY[] {
