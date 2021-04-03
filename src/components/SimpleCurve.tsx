@@ -35,10 +35,14 @@ namespace PathPoints {
         return lines;
     }
 
+    function nonNullish<T>(value: T): value is NonNullable<T> {
+        return value !== undefined && value !== null
+    }
+
     export function toPoints(pathPoints: PathPoint[]): XY[] {
         let rv: XY[] = pathPoints.map(point => {
             return point.d && (point.d.length === 1 ? point.d[0] : point.d[point.d.length - 1]);
-        }).filter(Boolean) as XY[];
+        }).filter(nonNullish);
         return rv;
     }
 
