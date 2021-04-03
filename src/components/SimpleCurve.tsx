@@ -34,25 +34,28 @@ function makeLines(points: PathPoint[]) {
     return lines;
 }
 
-function LineMarkers({ pathPoints, ...rest }: { pathPoints: PathPoint[]; } & React.SVGAttributes<SVGElement>) {
+function LineMarkers({ pathPoints, ...rest }: { pathPoints: PathPoint[] } & React.SVGAttributes<SVGElement>) {
     rest = { stroke: "#ff000080", strokeDasharray: "3,3", ...rest };
     const lines = makeLines(pathPoints);
     return (<>
-        {lines.map((line, index) => 
+        {lines.map((line, index) =>
             <line x1={line.a.x} y1={line.a.y} x2={line.b.x} y2={line.b.y} {...rest} key={index} />
         )}
     </>);
 }
 
-function PointMarkers({ pathPoints }: { pathPoints: PathPoint[]; }) {
+function PointMarkers({ pathPoints, ...rest }: { pathPoints: PathPoint[] } & React.SVGAttributes<SVGElement> ) {
+    rest = {fill: 'red', r: 3, ...rest};
     return (
         <>
             {pathPoints.map((point, index) => {
-                return <React.Fragment key={index}> {point.d?.map((xy, indexXY) => (
-                    <circle cx={xy.x} cy={xy.y} r={3} fill='red' key={`${index}.${indexXY}`}>
-                        <title>{xy.x}, {xy.y}</title>
-                    </circle>
-                ))} </React.Fragment>;
+                return <React.Fragment key={index}>
+                    {point.d?.map((xy, indexXY) =>
+                        <circle cx={xy.x} cy={xy.y} {...rest} key={`${index}.${indexXY}`}>
+                            <title>{xy.x}, {xy.y}</title>
+                        </circle>
+                    )}
+                </React.Fragment>;
             })}
         </>
     );
@@ -62,7 +65,7 @@ function pathPointsToSvgPath(points: PathPoint[]): string {
     return points.map(point => `${point.c} ${point.d?.map(xy => `${xy.x} ${xy.y}`) || ''}`).join(' ');
 }
 
-function generateCurvePathPoints({start, end, steps}: {start: XY, end: XY, steps: number}): PathPoint[] {
+function generateCurvePathPoints({ start, end, steps }: { start: XY, end: XY, steps: number; }): PathPoint[] {
     let pathPoints: PathPoint[] = [];
     let step: WH = { w: (end.x - start.x) / steps, h: end.y - start.y };
     let prev: XY | undefined;
@@ -78,7 +81,7 @@ function generateCurvePathPoints({start, end, steps}: {start: XY, end: XY, steps
 
 function SimpleCurve() {
 
-    let pathPoints: PathPoint[] = generateCurvePathPoints({start: { x: -200, y: -100 }, end: { x: 200, y: -150 }, steps: 4});
+    let pathPoints: PathPoint[] = generateCurvePathPoints({ start: { x: -200, y: -100 }, end: { x: 200, y: -150 }, steps: 4 });
     let linePath = pathPointsToSvgPath(pathPoints);
 
     return (
@@ -86,7 +89,7 @@ function SimpleCurve() {
             <div className="mx-auto w-96 h-96 border border-dotted border-red-800">
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
                     <DebugGrid x={-200} y={-200} visible={true} />
-                    <PointMarkers pathPoints={pathPoints} />
+                    <PointMarkers pathPoints={pathPoints} fill="transparent" stroke="red" />
                     <LineMarkers pathPoints={pathPoints} />
                     <path d={linePath} stroke="black" fill="none" />
                 </svg>
