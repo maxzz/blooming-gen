@@ -5,28 +5,28 @@ import DebugGrid from './SvgGrid';
 type XY = {
     x: number;
     y: number;
-}
+};
 
 type WH = { // Width and Height
     w: number;
     h: number;
-}
+};
 
 type PathPoint = {
     c: 'M' | 'Q';
     d?: XY[];
-}
+};
 
 function makeLines(points: PathPoint[]) {
-    const lines: {a: XY, b: XY}[] = [];
+    const lines: { a: XY, b: XY; }[] = [];
     let prev: XY | undefined;
     for (let point of points) {
         if (point.d && point.d.length > 0) {
-            prev ? lines.push({a: prev, b: (prev = point.d[0])}) : prev = point.d[0];
+            prev ? lines.push({ a: prev, b: (prev = point.d[0]) }) : prev = point.d[0];
             if (point.d.length > 1) {
-                lines.push({a: prev, b: (prev = point.d[1])});
+                lines.push({ a: prev, b: (prev = point.d[1]) });
                 if (point.d.length > 2) {
-                    lines.push({a: prev, b: (prev = point.d[2])});
+                    lines.push({ a: prev, b: (prev = point.d[2]) });
                 }
             }
         }
@@ -34,20 +34,17 @@ function makeLines(points: PathPoint[]) {
     return lines;
 }
 
-function LineMarkers(props: {pathPoints: PathPoint[]} & React.SVGAttributes<SVGElement>) {
-    let {pathPoints, ...rest} = props;
-    rest = {stroke: "#ff000080", strokeDasharray:"3,3", ...rest};
+function LineMarkers({ pathPoints, ...rest }: { pathPoints: PathPoint[]; } & React.SVGAttributes<SVGElement>) {
+    rest = { stroke: "#ff000080", strokeDasharray: "3,3", ...rest };
     const lines = makeLines(pathPoints);
-    return (
-        <>
-            {lines.map((line, index) => (
-                <line x1={line.a.x} y1={line.a.y} x2={line.b.x} y2={line.b.y} {...rest} key={index}/>
-            ))}
-        </>
-    );
+    return (<>
+        {lines.map((line, index) => 
+            <line x1={line.a.x} y1={line.a.y} x2={line.b.x} y2={line.b.y} {...rest} key={index} />
+        )}
+    </>);
 }
 
-function PointMarkers({pathPoints}: {pathPoints: PathPoint[]}) {
+function PointMarkers({ pathPoints }: { pathPoints: PathPoint[]; }) {
     return (
         <>
             {pathPoints.map((point, index) => {
@@ -55,24 +52,24 @@ function PointMarkers({pathPoints}: {pathPoints: PathPoint[]}) {
                     <circle cx={xy.x} cy={xy.y} r={3} fill='red' key={`${index}.${indexXY}`}>
                         <title>{xy.x}, {xy.y}</title>
                     </circle>
-                ))} </React.Fragment>
+                ))} </React.Fragment>;
             })}
         </>
     );
 }
 
-function makePath(points: PathPoint[]): string {
+function pathPointsToSvgPath(points: PathPoint[]): string {
     return points.map(point => `${point.c} ${point.d?.map(xy => `${xy.x} ${xy.y}`) || ''}`).join(' ');
 }
 
-function generateCurvePoints(start: XY, end: XY, steps: number): PathPoint[] {
+function generateCurvePathPoints({start, end, steps}: {start: XY, end: XY, steps: number}): PathPoint[] {
     let pathPoints: PathPoint[] = [];
-    let step: WH = {w: (end.x - start.x) / steps, h: end.y - start.y};
+    let step: WH = { w: (end.x - start.x) / steps, h: end.y - start.y };
     let prev: XY | undefined;
     pathPoints.push({ c: 'M', d: [(prev = start)] });
     for (let i = 0; i < steps; i++) {
-        let a: XY = {x: prev.x + step.w / 2, y: -step.h};
-        let b: XY = {x: prev.x + step.w, y: prev.y};
+        let a: XY = { x: prev.x + step.w / 2, y: -step.h };
+        let b: XY = { x: prev.x + step.w, y: prev.y };
         pathPoints.push({ c: 'Q', d: [a, b] });
         prev = b;
     }
@@ -81,18 +78,17 @@ function generateCurvePoints(start: XY, end: XY, steps: number): PathPoint[] {
 
 function SimpleCurve() {
 
-    let pathPoints: PathPoint[] = generateCurvePoints({x: -200, y: -100}, {x: 200, y: -150}, 4);
-    let controlPoints = makePath(pathPoints);
+    let pathPoints: PathPoint[] = generateCurvePathPoints({start: { x: -200, y: -100 }, end: { x: 200, y: -150 }, steps: 4});
+    let linePath = pathPointsToSvgPath(pathPoints);
 
     return (
         <div className="max-w-md mx-auto bg-indigo-100 h-full">
             <div className="mx-auto w-96 h-96 border border-dotted border-red-800">
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
-                    <DebugGrid x={-200} y={-200} visible={true}/>
+                    <DebugGrid x={-200} y={-200} visible={true} />
                     <PointMarkers pathPoints={pathPoints} />
                     <LineMarkers pathPoints={pathPoints} />
-                    {/* <LineMarkers pathPoints={pathPoints} stroke="#ff000080" strokeDasharray="3,3"/> */}
-                    <path d={controlPoints} stroke="black" fill="transparent" />
+                    <path d={linePath} stroke="black" fill="none" />
                 </svg>
             </div>
             <svg viewBox="0 0 1366 768" fill="none" stroke="green">
