@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import DebugGrid from './SvgGrid';
+import MarkGrid from './SvgGrid';
 
 type XY = {
     x: number;
@@ -18,7 +18,7 @@ type PathPoint = {
 };
 
 namespace PathPoints {
-    export function toLines(points: PathPoint[]) {
+    export function toLines(points: PathPoint[]): { a: XY, b: XY; }[] {
         const lines: { a: XY, b: XY; }[] = [];
         let prev: XY | undefined;
         for (let point of points) {
@@ -33,6 +33,18 @@ namespace PathPoints {
             }
         }
         return lines;
+    }
+
+    export function toPoints(pathPoints: PathPoint[]): XY[] {
+        let rv: XY[] = pathPoints.map(point => {
+            return point.d && (point.d.length === 1 ? point.d[0] : point.d[point.d.length - 1]);
+        }).filter(Boolean) as XY[];
+        return rv;
+    }
+
+    export function toControlPoint(pathPoints: PathPoint[]): XY[] {
+        let rv: XY[] = [];
+        return rv;
     }
 
     export function toSvgPath(points: PathPoint[]): string {
@@ -88,7 +100,7 @@ function SimpleCurve() {
         <div className="max-w-md mx-auto bg-indigo-100 h-full">
             <div className="mx-auto w-96 h-96 border border-dotted border-red-800">
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
-                    <DebugGrid x={-200} y={-200} visible={true} />
+                    <MarkGrid x={-200} y={-200} visible={true} />
                     <MarkPathPoints pathPoints={pathPoints} />
                     <Marklines pathPoints={pathPoints} />
 
