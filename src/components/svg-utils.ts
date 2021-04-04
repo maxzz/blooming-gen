@@ -1,4 +1,8 @@
-export type SvgTuple = [string, number?, number?, number?, number?, number?, number?];
+//export type SvgTuple = [string, number?, number?, number?, number?, number?, number?];
+export type SvgTuple = [string, ...number[]];
+
+var a: SvgTuple = ['a', 0, 1, 3];
+console.log(a);
 
 export function parsePathString(pathString: string): SvgTuple | undefined {
     if (!pathString) {
