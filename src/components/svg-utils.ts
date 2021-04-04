@@ -28,9 +28,9 @@ const reSpaces = '\x09\x0a\x0b\x0c\x0d\x20\xa0\u1680\u180e\u2000\u2001\u2002\u20
 const rePathCommand = new RegExp(`([a-z])[${reSpaces},]*((-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?[${reSpaces}]*,?[${reSpaces}]*)+)`, 'ig');
 const rePathValues = new RegExp(`(-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?)[${reSpaces}]*,?[${reSpaces}]*`, 'ig');
 
-function parsePathString(pathString: string): SvgTuple[] | undefined {
+export function parsePathString(pathString: string): SvgTuple[] {
     if (!pathString) {
-        return;
+        return [];
     }
 
     let paramCounts = {a: 7, c: 6, o: 2, h: 1, l: 2, m: 2, r: 4, q: 4, s: 4, t: 2, v: 1, u: 3, z: 0};
@@ -84,12 +84,8 @@ function parsePathString(pathString: string): SvgTuple[] | undefined {
     return data;
 }
 
-export function pathPointsFromPath(pathString: string): PathPoint[] {
-    const tuples = parsePathString(pathString);
-    if (!tuples) {
-        return [];
-    }
-    let rv = tuples.map<PathPoint>(tuple => {
+export function pathPointsFromPath(tuples: SvgTuple[]): PathPoint[] {
+    let rv = (tuples || []).map<PathPoint>(tuple => {
         let c = tuple[0];
         let xy: XY[] = [];
         for (let i = 1; i < tuple.length; i+=2) {
@@ -168,7 +164,7 @@ function relativeToAbsPos(pathPoints: PathPoint[]): PathPoint[] {
     });
 }
 
-export function pathToAbsolute(pathArray: SvgTuple[]) {
+export function pathToAbsolute(pathArray: SvgTuple[]): SvgTuple[] {
     if (!pathArray || !pathArray.length) {
         return [["M", 0, 0]];
     }

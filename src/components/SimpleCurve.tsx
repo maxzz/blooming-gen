@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MarkGrid from './SvgGrid';
-import { PathPoint, pathPointsFromPath, WH, XY } from './svg-utils';
+import { parsePathString, PathPoint, pathPointsFromPath, pathToAbsolute, WH, XY } from './svg-utils';
 
 namespace PathPoints {
     export function toLines(points: PathPoint[]): { a: XY, b: XY; }[] {
@@ -93,6 +93,15 @@ function MarkPathPoints({ pathPoints, ...rest }: { pathPoints: PathPoint[]; } & 
     </>);
 }
 
+function renderPathPoint(path: string): PathPoint[] {
+    let tuples = parsePathString(path);
+    tuples = pathToAbsolute(tuples);
+    let pp = pathPointsFromPath(tuples);
+
+    console.log('pp: ', pp);
+    return pp;
+}
+
 function SimpleCurve() {
 
     let pathPoints: PathPoint[] = PathPoints.generateCurve({ start: { x: -200, y: -100 }, end: { x: 200, y: -150 }, steps: 4 });
@@ -102,9 +111,11 @@ function SimpleCurve() {
 
     // let pp = pathPointsFromPath("M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34");
     // let pp = pathPointsFromPath("M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z");
-    let pp = pathPointsFromPath("M18,69.48H100,200Z");
-    console.log('pp: ', pp);
-    
+    // let pp = pathPointsFromPath("M18,69.48H100,200Z");
+    // console.log('pp: ', pp);
+
+    let pp1 = renderPathPoint('M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z');
+    let pp2 = renderPathPoint('M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34');
 
     return (
         <div className="pt-8 max-w-md mx-auto bg-indigo-100">
@@ -118,13 +129,15 @@ function SimpleCurve() {
                     <MarkPlaces places={ctrlPlaces} stroke="red"/>
                     <path d={linePath} stroke="black" fill="none" /> */}
 
-                    <MarkPathPoints pathPoints={pp} />
+                    <MarkPathPoints pathPoints={pp1} stroke="green" />
+                    <MarkPathPoints pathPoints={pp2} />
                 </svg>
             </div>
 
             <div className="ml-4 py-2" >
-                <svg className="w-16 h-16" viewBox="0 0 33.84 69.68" fill="none" stroke="green">
-                    <MarkPathPoints pathPoints={pp} />
+                <svg className="w-24 max-h-24 bg-indigo-400" viewBox="0 0 33.84 69.68" fill="none" stroke="green">
+                    <MarkPathPoints pathPoints={pp1} stroke="green" />
+                    <MarkPathPoints pathPoints={pp2} />
                     <path d="M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z"/>
                     <path d="M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34"/>
                 </svg>                
