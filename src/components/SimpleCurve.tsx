@@ -36,19 +36,20 @@ namespace PathPoints {
     }
 
     function nonNullish<T>(value: T): value is NonNullable<T> {
-        return Boolean(value)
+        return Boolean(value);
     }
 
-    export function toPoints(pathPoints: PathPoint[]): XY[] {
-        let rv: XY[] = pathPoints.map(point => {
+    export function getPoints(pathPoints: PathPoint[]): XY[] {
+        return pathPoints.map(point => {
             return point.d && (point.d.length === 1 ? point.d[0] : point.d[point.d.length - 1]);
         }).filter(nonNullish);
-        return rv;
     }
 
-    export function toControlPoint(pathPoints: PathPoint[]): XY[] {
-        let rv: XY[] = [];
-        return rv;
+    export function getControlPoints(pathPoints: PathPoint[]): XY[] {
+        return pathPoints.reduce<XY[]>((acc, cur) => {
+            cur.d && cur.d.length > 1 && acc.push(...cur.d.slice(0, cur.d.length - 1));
+            return acc;
+        }, []);
     }
 
     export function toSvgPath(points: PathPoint[]): string {
@@ -70,12 +71,23 @@ namespace PathPoints {
     }
 } //namespace PathPoints
 
-function Marklines({ pathPoints, ...rest }: { pathPoints: PathPoint[]; } & React.SVGAttributes<SVGElement>) {
+function MarkLines({ pathPoints, ...rest }: { pathPoints: PathPoint[]; } & React.SVGAttributes<SVGElement>) {
     rest = { stroke: "#ff000080", strokeDasharray: "3,3", ...rest };
     const lines = PathPoints.toLines(pathPoints);
     return (<>
         {lines.map((line, index) =>
             <line x1={line.a.x} y1={line.a.y} x2={line.b.x} y2={line.b.y} {...rest} key={index} />
+        )}
+    </>);
+}
+
+function MarkPlaces({ places, ...rest }: { places: XY[]; } & React.SVGAttributes<SVGElement>) {
+    rest = { fill: "none", stroke: "red", r: 3, ...rest };
+    return (<>
+        {places.map((xy, index) =>
+            <circle cx={xy.x} cy={xy.y} {...rest} key={index}>
+                <title>{xy.x}, {xy.y}</title>
+            </circle>
         )}
     </>);
 }
@@ -99,19 +111,25 @@ function SimpleCurve() {
 
     let pathPoints: PathPoint[] = PathPoints.generateCurve({ start: { x: -200, y: -100 }, end: { x: 200, y: -150 }, steps: 4 });
     let linePath = PathPoints.toSvgPath(pathPoints);
+    let places = PathPoints.getPoints(pathPoints);
+    let ctrlPlaces = PathPoints.getControlPoints(pathPoints);
 
     return (
-        <div className="max-w-md mx-auto bg-indigo-100 h-full">
-            <div className="mx-auto w-96 h-96 border border-dotted border-red-800">
+        <div className="pt-8 max-w-md mx-auto bg-indigo-100">
+            <div className="mx-auto w-96 h-96 border border-l-0 border-t-0 border-red-300">
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
                     <MarkGrid x={-200} y={-200} visible={true} />
-                    <MarkPathPoints pathPoints={pathPoints} />
-                    <Marklines pathPoints={pathPoints} />
+                    {/* <MarkPathPoints pathPoints={pathPoints} /> */}
+                    <MarkLines pathPoints={pathPoints} />
+
+                    <MarkPlaces places={places} stroke="green"/>
+                    <MarkPlaces places={ctrlPlaces} stroke="red"/>
 
                     <path d={linePath} stroke="black" fill="none" />
                 </svg>
             </div>
-            <svg viewBox="0 0 1366 768" fill="none" stroke="green">
+
+            <svg className="mx-6 my-2" viewBox="0 0 1366 768" fill="none" stroke="green">
                 <path className="st0" d="M42 85s16-10 16-21-4-16-6-25 3-24 3-24L38 28c-6 6-13 12-13 24-1 11 17 33 17 33z" />
                 <path className="st0" d="M42 85s0-12-3-31c-2-20 16-39 16-39" />
             </svg>
