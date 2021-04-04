@@ -100,7 +100,9 @@ function SimpleCurve() {
     let places = PathPoints.getPoints(pathPoints);
     let ctrlPlaces = PathPoints.getControlPoints(pathPoints);
 
-    pathPointsFromPath("M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34");
+    let pp = pathPointsFromPath("M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34");
+    console.log('pp: ', pp);
+    
 
     return (
         <div className="pt-8 max-w-md mx-auto bg-indigo-100">

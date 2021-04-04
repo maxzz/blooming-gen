@@ -66,8 +66,8 @@ function parsePathString(pathString: string): SvgTuple[] | undefined {
         }
     } as any);
 
-    console.log('src', pathString);
-    console.log('data', data);
+    console.log('source:', pathString);
+    console.log('data:', data);
 
     return data;
 }
@@ -90,14 +90,18 @@ data: [Array(3), Array(5), Array(5)]
     2: ["S", 30.43, 0.34, 30.43, 0.34]
 */
 
-export function pathPointsFromPath(pathString: string) {
+export function pathPointsFromPath(pathString: string): PathPoint[] | undefined {
 
     const tuples = parsePathString(pathString);
     if (!tuples) {
         return;
     }
-    tuples.map<PathPoint>(tuple => {
-        return {c: tuple[0], d: [] };
+    let rv = tuples.map<PathPoint>(tuple => {
+        let xy: XY[] = [];
+        for (let i = 1; i < tuple.length; i+=2) {
+            xy.push({x: tuple[i] as number, y: tuple[i+1] as number});
+        }
+        return {c: tuple[0], d: xy };
     });
-   
+    return rv;
 }
