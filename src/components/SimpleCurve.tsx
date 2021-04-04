@@ -129,10 +129,17 @@ function SimpleCurve() {
                 </svg>
             </div>
 
-            <svg className="mx-6 my-2" viewBox="0 0 1366 768" fill="none" stroke="green">
-                <path className="st0" d="M42 85s16-10 16-21-4-16-6-25 3-24 3-24L38 28c-6 6-13 12-13 24-1 11 17 33 17 33z" />
-                <path className="st0" d="M42 85s0-12-3-31c-2-20 16-39 16-39" />
-            </svg>
+            <div className="mx-6 my-2" >
+
+                <svg className="w-16 h-16" viewBox="0 0 33.84 69.68" fill="none" stroke="green">
+                            <path d="M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z"/>
+                            <path d="M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34"/>
+                </svg>                
+                <svg className="w-32 h-32" viewBox="0 0 1366 768" fill="none" stroke="green">
+                    <path className="st0" d="M42 85s16-10 16-21-4-16-6-25 3-24 3-24L38 28c-6 6-13 12-13 24-1 11 17 33 17 33z" />
+                    <path className="st0" d="M42 85s0-12-3-31c-2-20 16-39 16-39" />
+                </svg>
+            </div>
         </div>
     );
 }
