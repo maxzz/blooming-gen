@@ -101,7 +101,8 @@ function SimpleCurve() {
     let ctrlPlaces = PathPoints.getControlPoints(pathPoints);
 
     // let pp = pathPointsFromPath("M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34");
-    let pp = pathPointsFromPath("M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z");
+    // let pp = pathPointsFromPath("M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z");
+    let pp = pathPointsFromPath("M18,69.48H100,200Z");
     console.log('pp: ', pp);
     
 

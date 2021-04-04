@@ -13,7 +13,7 @@ export type PathPoint = {
     d?: XY[];
 }
 
-type SvgTuple = [PathCmd, ...number[]];
+type SvgTuple = any[]; //type SvgTuple = [PathCmd, ...number[]];
 
 type PathM = 'M' | 'm';                         // MoveTo
 type PathL = 'L' | 'l' | 'H' | 'h' | 'V' | 'v'; // LineTo
@@ -166,4 +166,80 @@ function relativeToAbsPos(pathPoints: PathPoint[]): PathPoint[] {
         
         return {c: point.c};
     });
+}
+
+export function pathToAbsolute(pathArray: SvgTuple[]) {
+    if (!pathArray || !pathArray.length) {
+        return [["M", 0, 0]];
+    }
+    var res = [],
+        x = 0,
+        y = 0,
+        mx = 0,
+        my = 0,
+        start = 0,
+        pa0;
+    if (pathArray[0][0] == "M") {
+        x = +pathArray[0][1];
+        y = +pathArray[0][2];
+        mx = x;
+        my = y;
+        start++;
+        res[0] = ["M", x, y];
+    }
+    for (let r, pa, i = start, ii = pathArray.length; i < ii; i++) {
+        res.push(r = []);
+        pa = pathArray[i];
+        pa0 = pa[0];
+        if (pa0 != pa0.toUpperCase()) {
+            r[0] = pa0.toUpperCase();
+            switch (r[0]) {
+                case "A":
+                    r[1] = pa[1];
+                    r[2] = pa[2];
+                    r[3] = pa[3];
+                    r[4] = pa[4];
+                    r[5] = pa[5];
+                    r[6] = +pa[6] + x;
+                    r[7] = +pa[7] + y;
+                    break;
+                case "V":
+                    r[1] = +pa[1] + y;
+                    break;
+                case "H":
+                    r[1] = +pa[1] + x;
+                    break;
+                case "M":
+                    mx = +pa[1] + x;
+                    my = +pa[2] + y;
+                default:
+                    for (let j = 1, jj = pa.length; j < jj; j++) {
+                        r[j] = +pa[j] + (j % 2 ? x : y);
+                    }
+            }
+        } else {
+            for (let k = 0, kk = pa.length; k < kk; k++) {
+                r[k] = pa[k];
+            }
+        }
+        switch (r[0]) {
+            case "Z":
+                x = +mx;
+                y = +my;
+                break;
+            case "H":
+                x = r[1];
+                break;
+            case "V":
+                y = r[1];
+                break;
+            case "M":
+                mx = r[r.length - 2];
+                my = r[r.length - 1];
+            default:
+                x = r[r.length - 2];
+                y = r[r.length - 1];
+        }
+    }
+    return res;
 }
