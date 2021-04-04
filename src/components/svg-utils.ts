@@ -66,32 +66,25 @@ function parsePathString(pathString: string): SvgTuple[] | undefined {
         }
     } as any);
 
-    console.log('source:', pathString);
-    console.log('data:', data);
+    /*
+        console.log('source:', pathString);
+            // source: 'M18,69.48L10,20,30,40'
+            // data: [Array(3), Array(3), Array(3)]
+            //     0: ["M", 18, 69.48]
+            //     1: ["L", 10, 20]
+            //     2: ["L", 30, 40]
+        console.log('data:', data);
+            // source: 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34'
+            // data: [Array(3), Array(5), Array(5)]
+            //     0: ["M", 18, 69.48]
+            //     1: ["s", -0.6, -11.27, -3, -30.86]
+            //     2: ["S", 30.43, 0.34, 30.43, 0.34]
+    */
 
     return data;
 }
 
-parsePathString("M18,69.48L10,20,30,40");
-/*
-source: 'M18,69.48L10,20,30,40'
-data: [Array(3), Array(3), Array(3)]
-    0: ["M", 18, 69.48]
-    1: ["L", 10, 20]
-    2: ["L", 30, 40]
-*/
-
-// parsePathString("M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34");
-/*
-source: 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34'
-data: [Array(3), Array(5), Array(5)]
-    0: ["M", 18, 69.48]
-    1: ["s", -0.6, -11.27, -3, -30.86]
-    2: ["S", 30.43, 0.34, 30.43, 0.34]
-*/
-
 export function pathPointsFromPath(pathString: string): PathPoint[] | undefined {
-
     const tuples = parsePathString(pathString);
     if (!tuples) {
         return;
