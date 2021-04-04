@@ -23,7 +23,7 @@ type pathA = 'A' | 'a';                         // Elliptical Arc Curve
 type pathZ = 'Z' | 'z';                         // ClosePath
 
 const reSpaces = '\x09\x0a\x0b\x0c\x0d\x20\xa0\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029';
-const rePathCommand = new RegExp(`([a-z])[${reSpaces},]*((-?\\d*\\.?\\d*(?:e[+-\]?\\d+)?[${reSpaces}]*,?[${reSpaces}]*)+)`, 'ig');
+const rePathCommand = new RegExp(`([a-z])[${reSpaces},]*((-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?[${reSpaces}]*,?[${reSpaces}]*)+)`, 'ig');
 const rePathValues = new RegExp(`(-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?)[${reSpaces}]*,?[${reSpaces}]*`, 'ig');
 
 function parsePathString(pathString: string): SvgTuple[] | undefined {
