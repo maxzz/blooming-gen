@@ -84,17 +84,86 @@ function parsePathString(pathString: string): SvgTuple[] | undefined {
     return data;
 }
 
-export function pathPointsFromPath(pathString: string): PathPoint[] | undefined {
+export function pathPointsFromPath(pathString: string): PathPoint[] {
     const tuples = parsePathString(pathString);
     if (!tuples) {
-        return;
+        return [];
     }
     let rv = tuples.map<PathPoint>(tuple => {
+        let c = tuple[0];
         let xy: XY[] = [];
         for (let i = 1; i < tuple.length; i+=2) {
-            xy.push({x: tuple[i] as number, y: tuple[i+1] as number});
+            xy.push({x: tuple[i] as number, y: tuple[i+1] as number || 0});
         }
-        return {c: tuple[0], d: xy };
+        if (c === 'v' || c === 'V') {
+            xy = [{x: 0, y: xy[0].x}];
+        }
+        return {c, d: xy };
     });
     return rv;
+}
+
+/*
+type PathM = 'M' | 'm';                         // MoveTo
+type PathL = 'L' | 'l' | 'H' | 'h' | 'V' | 'v'; // LineTo
+type PathC = 'C' | 'c' | 'S' | 's';             // Cubic Bézier Curve
+type PathQ = 'Q' | 'q' | 'T' | 't';             // Quadratic Bézier Curve
+type PathA = 'A' | 'a';                         // Elliptical Arc Curve
+type PathZ = 'Z' | 'z';                         // ClosePath
+*/
+
+const lowerCase = String.prototype.toLowerCase;
+
+function getPrevPos(point: PathPoint, prevPos: XY): XY {
+    if (!point.d) {
+        return prevPos;
+    }
+    if (!prevPos) {
+        prevPos = {x:0, y:0};
+    }
+    if (point.c != lowerCase.call(point.c)) {
+        switch (lowerCase.call(point.c)) {
+            case 'm':
+            case 'l': return {x: point.d[0].x + prevPos.x, y: point.d[0].y + prevPos.y};
+            case 'h': return {x: point.d[0].x + prevPos.x, y: point.d[0].y + prevPos.y};
+        }
+    } else {
+        switch (point.c) {
+            case 'M':
+            case 'L': return point.d[0];
+            case 'H': return {x: point.d[0].x, y: prevPos.y};
+        }
+    }
+    return prevPos;
+}
+
+function relativeToAbsPos(pathPoints: PathPoint[]): PathPoint[] {
+    let prevPos: XY | undefined;
+    return pathPoints.map((point) => {
+
+        let thisPos: XY | undefined;
+        if (point.d) {
+            if (point.c === 'M') {
+                thisPos = point.d[0];
+            } else if (point.c === 'm') {
+                thisPos = prevPos ? {x: prevPos.x + point.d[0].x, y: prevPos.y + point.d[0].y} : point.d[0];
+            } else if (point.c === 'Q') {
+                thisPos = point.d[1];
+            } else if (point.c === 'q') {
+                thisPos = prevPos ? {x: prevPos.x + point.d[1].x, y: prevPos.y + point.d[1].y} : point.d[1];
+            }
+        }
+
+        //TODO: set initial {x:0, y:0}
+        //case on point.c
+        //separete function give prev and get current
+
+        if (point.c > 'Z' && prevPos) { // i.e. lowercase command
+            //let prevPos = 
+        }
+
+        prevPos = thisPos;
+        
+        return {c: point.c};
+    });
 }
