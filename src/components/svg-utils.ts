@@ -9,18 +9,20 @@ export type WH = { // Width and Height
 }
 
 export type PathPoint = {
-    c: string; //'M' | 'Q'
+    c: PathCmd; //'M' | 'Q'
     d?: XY[];
 }
 
-type SvgTuple = [string, ...number[]];
+type SvgTuple = [PathCmd, ...number[]];
 
-type pathM = 'M' | 'm';                         // MoveTo
-type pathL = 'L' | 'l' | 'H' | 'h' | 'V' | 'v'; // LineTo
-type pathC = 'C' | 'c' | 'S' | 's';             // Cubic Bézier Curve
-type pathQ = 'Q' | 'q' | 'T' | 't';             // Quadratic Bézier Curve
-type pathA = 'A' | 'a';                         // Elliptical Arc Curve
-type pathZ = 'Z' | 'z';                         // ClosePath
+type PathM = 'M' | 'm';                         // MoveTo
+type PathL = 'L' | 'l' | 'H' | 'h' | 'V' | 'v'; // LineTo
+type PathC = 'C' | 'c' | 'S' | 's';             // Cubic Bézier Curve
+type PathQ = 'Q' | 'q' | 'T' | 't';             // Quadratic Bézier Curve
+type PathA = 'A' | 'a';                         // Elliptical Arc Curve
+type PathZ = 'Z' | 'z';                         // ClosePath
+
+type PathCmd = PathM | PathL | PathC | PathQ | PathA | PathZ;
 
 const reSpaces = '\x09\x0a\x0b\x0c\x0d\x20\xa0\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029';
 const rePathCommand = new RegExp(`([a-z])[${reSpaces},]*((-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?[${reSpaces}]*,?[${reSpaces}]*)+)`, 'ig');
@@ -34,37 +36,35 @@ function parsePathString(pathString: string): SvgTuple[] | undefined {
     let paramCounts = {a: 7, c: 6, o: 2, h: 1, l: 2, m: 2, r: 4, q: 4, s: 4, t: 2, v: 1, u: 3, z: 0};
     let data: any[] = [];
 
-    pathString.replace(rePathCommand, 
-        function (a: string, b: string, c: string) {
-            let params: any[] = [];
-            let name = b.toLowerCase() as keyof typeof paramCounts;
+    pathString.replace(rePathCommand, function (a: string, b: string, c: string) {
+        let params: any[] = [];
+        let name = b.toLowerCase() as keyof typeof paramCounts;
 
-            c.replace(rePathValues, function (a: string, b: string) {
-                b && params.push(+b);
-            } as any);
+        c.replace(rePathValues, function (a: string, b: string) {
+            b && params.push(+b);
+        } as any);
 
-            if (name == "m" && params.length > 2) {
-                data.push([b].concat(params.splice(0, 2)));
-                name = "l";
-                b = b == "m" ? "l" : "L";
-            }
+        if (name == "m" && params.length > 2) {
+            data.push([b].concat(params.splice(0, 2)));
+            name = "l";
+            b = b == "m" ? "l" : "L";
+        }
 
-            if (name == "o" && params.length == 1) {
-                data.push([b, params[0]]);
-            }
+        if (name == "o" && params.length == 1) {
+            data.push([b, params[0]]);
+        }
 
-            if (name == "r") {
-                data.push([b].concat(params));
-            } else {
-                while (params.length >= paramCounts[name]) {
-                    data.push([b].concat(params.splice(0, paramCounts[name])));
-                    if (!paramCounts[name]) {
-                        break;
-                    }
+        if (name == "r") {
+            data.push([b].concat(params));
+        } else {
+            while (params.length >= paramCounts[name]) {
+                data.push([b].concat(params.splice(0, paramCounts[name])));
+                if (!paramCounts[name]) {
+                    break;
                 }
             }
-        } as any
-    );
+        }
+    } as any);
 
     console.log('src', pathString);
     console.log('data', data);
