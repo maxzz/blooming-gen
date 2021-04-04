@@ -1,21 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MarkGrid from './SvgGrid';
-
-type XY = {
-    x: number;
-    y: number;
-};
-
-type WH = { // Width and Height
-    w: number;
-    h: number;
-};
-
-type PathPoint = {
-    c: 'M' | 'Q';
-    d?: XY[];
-};
+import { PathPoint, pathPointsFromPath, WH, XY } from './svg-utils';
 
 namespace PathPoints {
     export function toLines(points: PathPoint[]): { a: XY, b: XY; }[] {
@@ -113,6 +99,8 @@ function SimpleCurve() {
     let linePath = PathPoints.toSvgPath(pathPoints);
     let places = PathPoints.getPoints(pathPoints);
     let ctrlPlaces = PathPoints.getControlPoints(pathPoints);
+
+    pathPointsFromPath("M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34");
 
     return (
         <div className="pt-8 max-w-md mx-auto bg-indigo-100">

@@ -1,22 +1,50 @@
-//export type SvgTuple = [string, number?, number?, number?, number?, number?, number?];
-export type SvgTuple = [string, ...number[]];
+export type XY = {
+    x: number;
+    y: number;
+}
 
-var a: SvgTuple = ['a', 0, 1, 3];
-console.log(a);
+export type WH = { // Width and Height
+    w: number;
+    h: number;
+}
 
-export function parsePathString(pathString: string): SvgTuple | undefined {
+export type PathPoint = {
+    c: string; //'M' | 'Q'
+    d?: XY[];
+}
+
+type SvgTuple = [string, ...number[]];
+
+type pathM = 'M' | 'm';                         // MoveTo
+type pathL = 'L' | 'l' | 'H' | 'h' | 'V' | 'v'; // LineTo
+type pathC = 'C' | 'c' | 'S' | 's';             // Cubic Bézier Curve
+type pathQ = 'Q' | 'q' | 'T' | 't';             // Quadratic Bézier Curve
+type pathA = 'A' | 'a';                         // Elliptical Arc Curve
+type pathZ = 'Z' | 'z';                         // ClosePath
+
+const reSpaces = '\x09\x0a\x0b\x0c\x0d\x20\xa0\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029';
+const rePathCommand = new RegExp(`([a-z])[${reSpaces},]*((-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?[${reSpaces}]*,?[${reSpaces}]*)+)`, 'ig');
+    // ([a-z])[ ,]*((-?\d*\.?\d*(?:e[+-\\]?\d+)?[ ]*,?[ ]*)+)
+    //m18,69.48L10,20,30,40
+    /*
+        Match 1:	m18,69.48	     0	     9
+        Group 1:	m	     0	     1
+        Group 2:	18,69.48	     1	     8
+        Group 3:	69.48	     4	     5
+        Match 2:	L10,20,30,40	     9	    12
+        Group 1:	L	     9	     1
+        Group 2:	10,20,30,40	    10	    11
+        Group 3:	40	    19	     2    
+    */
+const rePathValues = new RegExp(`(-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?)[${reSpaces}]*,?[${reSpaces}]*`, 'ig');
+
+function parsePathString(pathString: string): SvgTuple[] | undefined {
     if (!pathString) {
         return;
     }
 
-    console.log('src', pathString);
-    
     let paramCounts = {a: 7, c: 6, o: 2, h: 1, l: 2, m: 2, r: 4, q: 4, s: 4, t: 2, v: 1, u: 3, z: 0};
     let data: any[] = [];
-
-    const reSpaces = "\x09\x0a\x0b\x0c\x0d\x20\xa0\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029";
-    const rePathCommand = new RegExp(`([a-z])[${reSpaces},]*((-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?[${reSpaces}]*,?[${reSpaces}]*)+)`, "ig");
-    const rePathValues = new RegExp(`(-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?)[${reSpaces}]*,?[${reSpaces}]*`, "ig");
 
     pathString.replace(rePathCommand, 
         function (a: string, b: string, c: string) {
@@ -50,10 +78,22 @@ export function parsePathString(pathString: string): SvgTuple | undefined {
         } as any
     );
 
+    console.log('src', pathString);
     console.log('data', data);
+
+    return data;
 }
 
-parsePathString("M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34");
+parsePathString("M18,69.48L10,20,30,40");
+/*
+source: 'M18,69.48L10,20,30,40'
+data: [Array(3), Array(3), Array(3)]
+    0: ["M", 18, 69.48]
+    1: ["L", 10, 20]
+    2: ["L", 30, 40]
+*/
+
+// parsePathString("M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34");
 /*
 source: 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34'
 data: [Array(3), Array(5), Array(5)]
@@ -61,3 +101,15 @@ data: [Array(3), Array(5), Array(5)]
     1: ["s", -0.6, -11.27, -3, -30.86]
     2: ["S", 30.43, 0.34, 30.43, 0.34]
 */
+
+export function pathPointsFromPath(pathString: string) {
+
+    const tuples = parsePathString(pathString);
+    if (!tuples) {
+        return;
+    }
+    tuples.map<PathPoint>(tuple => {
+        return {c: tuple[0], d: [] };
+    });
+   
+}
