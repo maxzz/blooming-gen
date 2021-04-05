@@ -8,6 +8,7 @@ export type WH = { // Width and Height
     h: number;
 }
 
+/*
 type PathM = 'M' | 'm';                         // MoveTo
 type PathL = 'L' | 'l' | 'H' | 'h' | 'V' | 'v'; // LineTo
 type PathC = 'C' | 'c' | 'S' | 's';             // Cubic Bézier Curve
@@ -15,12 +16,7 @@ type PathQ = 'Q' | 'q' | 'T' | 't';             // Quadratic Bézier Curve
 type PathA = 'A' | 'a';                         // Elliptical Arc Curve
 type PathZ = 'Z' | 'z';                         // ClosePath
 type PathCmd = PathM | PathL | PathC | PathQ | PathA | PathZ;
-
-export type PathPoint = {
-    c: PathCmd; //'M' | 'Q'
-    d?: XY[];
-}
-
+*/
 type SvgTuple = any[]; //type SvgTuple = [PathCmd, ...number[]];
 
 const reSpaces = '\x09\x0a\x0b\x0c\x0d\x20\xa0\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029';
@@ -87,13 +83,7 @@ export function pathToAbsolute(pathArray: SvgTuple[]): SvgTuple[] {
     if (!pathArray || !pathArray.length) {
         return [["M", 0, 0]];
     }
-    var res = [],
-        x = 0,
-        y = 0,
-        mx = 0,
-        my = 0,
-        start = 0,
-        pa0;
+    let res = [], x = 0, y = 0, mx = 0, my = 0, start = 0, pa0;
     if (pathArray[0][0] == "M") {
         x = +pathArray[0][1];
         y = +pathArray[0][2];
@@ -157,19 +147,4 @@ export function pathToAbsolute(pathArray: SvgTuple[]): SvgTuple[] {
         }
     }
     return res;
-}
-
-export function pathPointsFromPath(tuples: SvgTuple[]): PathPoint[] {
-    let rv = (tuples || []).map<PathPoint>(tuple => {
-        let c = tuple[0];
-        let xy: XY[] = [];
-        for (let i = 1; i < tuple.length; i+=2) {
-            xy.push({x: tuple[i] as number, y: tuple[i+1] as number || 0});
-        }
-        if (c === 'v' || c === 'V') {
-            xy = [{x: 0, y: xy[0].x}];
-        }
-        return {c, d: xy };
-    });
-    return rv;
 }
