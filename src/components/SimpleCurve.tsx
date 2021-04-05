@@ -122,14 +122,14 @@ function SimpleCurve() {
                     <MarkGrid x={-200} y={-200} visible={true} />
                     {/* <MarkPathPoints pathPoints={pathPoints} /> */}
 
-                    <MarkLines pathPoints={pathPoints} />
+                    {/* <MarkLines pathPoints={pathPoints} />
                     <MarkPlaces places={places} stroke="green"/>
                     <MarkPlaces places={ctrlPlaces} stroke="red"/>
-                    <path d={linePath} stroke="black" fill="none" />
+                    <path d={linePath} stroke="black" fill="none" /> */}
 
-                    {/* <MarkPathPoints pathPoints={pp1} />
+                    <MarkPathPoints pathPoints={pp1} />
                     <MarkPathPoints pathPoints={pp2} fill="red" />
-                    <MarkLines pathPoints={pp1} /> */}
+                    <MarkLines pathPoints={pp1} />
                 </svg>
             </div>
 
