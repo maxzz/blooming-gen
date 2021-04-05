@@ -1,9 +1,9 @@
 import React from 'react';
 
-const SvgGrid = ({x = 0, y = 0, visible = true}: {x?: number, y?: number, visible?: boolean}) => {
+const SvgGrid = ({x = 0, y = 0, visible = true, ...rest}: {x?: number, y?: number, visible?: boolean} & React.SVGAttributes<SVGElement>) => {
     return (
         <>
-            {visible && <svg width="100%" height="100%" x={x} y={y}>
+            {visible && <svg width="100%" height="100%" x={x} y={y} {...rest}>
                 <defs>
                     <pattern id="smallGrid" width="5" height="5" patternUnits="userSpaceOnUse">
                         <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#80808020" strokeWidth=".5" />

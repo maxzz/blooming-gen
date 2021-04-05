@@ -18,6 +18,19 @@ type PathZ = 'Z' | 'z';                         // ClosePath
 type PathCmd = PathM | PathL | PathC | PathQ | PathA | PathZ;
 */
 type SvgTuple = any[]; //type SvgTuple = [PathCmd, ...number[]];
+/*
+    source: 'M18,69.48L10,20,30,40'
+    data: [Array(3), Array(3), Array(3)]
+        0: ["M", 18, 69.48]
+        1: ["L", 10, 20]
+        2: ["L", 30, 40]
+    
+    source: 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34'
+    data: [Array(3), Array(5), Array(5)]
+        0: ["M", 18, 69.48]
+        1: ["s", -0.6, -11.27, -3, -30.86]
+        2: ["S", 30.43, 0.34, 30.43, 0.34]
+*/
 
 const reSpaces = '\x09\x0a\x0b\x0c\x0d\x20\xa0\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029';
 const rePathCommand = new RegExp(`([a-z])[${reSpaces},]*((-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?[${reSpaces}]*,?[${reSpaces}]*)+)`, 'ig');
@@ -60,21 +73,6 @@ export function parsePathString(pathString: string): SvgTuple[] {
             }
         }
     } as any);
-
-    /*
-        console.log('source:', pathString);
-            // source: 'M18,69.48L10,20,30,40'
-            // data: [Array(3), Array(3), Array(3)]
-            //     0: ["M", 18, 69.48]
-            //     1: ["L", 10, 20]
-            //     2: ["L", 30, 40]
-        console.log('data:', data);
-            // source: 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34'
-            // data: [Array(3), Array(5), Array(5)]
-            //     0: ["M", 18, 69.48]
-            //     1: ["s", -0.6, -11.27, -3, -30.86]
-            //     2: ["S", 30.43, 0.34, 30.43, 0.34]
-    */
 
     return data;
 }
