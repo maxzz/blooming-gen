@@ -17,7 +17,7 @@ type PathA = 'A' | 'a';                         // Elliptical Arc Curve
 type PathZ = 'Z' | 'z';                         // ClosePath
 type PathCmd = PathM | PathL | PathC | PathQ | PathA | PathZ;
 */
-type SvgTuple = any[]; //type SvgTuple = [PathCmd, ...number[]];
+export type SvgTuple = any[]; //type SvgTuple = [PathCmd, ...number[]];
 /*
     source: 'M18,69.48L10,20,30,40'
     data: [Array(3), Array(3), Array(3)]
