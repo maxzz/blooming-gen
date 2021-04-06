@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MarkGrid from './SvgGrid';
-import { getPoints, parsePathString, pathToAbsolute, printTuples, SvgTuple, WH, XY } from './svg-utils';
+import { CXY, getPoints, parsePathString, pathToAbsolute, printTuples, SvgTuple, WH, XY } from './svg-utils';
 
-export function getControlPoints(tuplesAbs: SvgTuple[]): XY[] {
-    let rv: XY[] = [];
+export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
+    let rv: CXY[] = [];
     let prevPos: XY = { x: 0, y: 0 };
     let prevTuple: SvgTuple;
     tuplesAbs.forEach((tuple: SvgTuple, index: number) => {
@@ -22,26 +22,30 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): XY[] {
                 prevPos = { x: prevPos.x, y: tuple[1] };
                 break;
             case 'C':
-                rv.push({ i: index, x: tuple[1], y: tuple[2] }, { i: index,  x: tuple[3], y: tuple[4] });
-                prevPos = { x: tuple[5], y: tuple[6] };
+                curPos = { x: tuple[5], y: tuple[6] };
+                rv.push({ i: index, p: curPos, c: { x: tuple[1], y: tuple[2] }});
+                rv.push({ i: index, p: curPos, c: { x: tuple[3], y: tuple[4] }});
+                prevPos = curPos;
                 break;
             case 'S': {
                 let prevCtrl: XY;
                 switch (prevTuple[0]) {
                     case 'C':
-                        prevCtrl = { i: index, x: prevTuple[3], y: prevTuple[4] }; // TODO: reflection
+                        prevCtrl = { x: prevTuple[3], y: prevTuple[4] }; // TODO: reflection
                         break;
                     default:
                         prevCtrl = prevPos;
                 }
-                rv.push({ i: index, ...prevCtrl});
-                rv.push({ i: index, x: tuple[1], y: tuple[2] });
-                prevPos = { x: tuple[3], y: tuple[4] };
+                curPos = { x: tuple[3], y: tuple[4] };
+                rv.push({ i: index, p: curPos, c: prevCtrl});
+                rv.push({ i: index, p: curPos, c: { x: tuple[1], y: tuple[2] }});
+                prevPos = curPos;
                 break;
             }
             case 'Q':
-                rv.push({ i: index, x: tuple[1], y: tuple[2] });
-                prevPos = { x: tuple[3], y: tuple[4] };
+                curPos = { x: tuple[3], y: tuple[4] };
+                rv.push({ i: index, p: curPos, c: {x: tuple[1], y: tuple[2] }});
+                prevPos = curPos;
                 break;
             case 'T': {
                 let prevCtrl: XY;
@@ -56,13 +60,15 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): XY[] {
                     default:
                         prevCtrl = prevPos;
                 }
-                rv.push({ i: index, ...prevCtrl});
-                prevPos = { x: tuple[1], y: tuple[2] };
+                curPos = { x: tuple[1], y: tuple[2] };
+                rv.push({ i: index, p: curPos, c: prevCtrl});
+                prevPos = curPos;
                 break;
             }
             case 'A':
                 //rv.push({ i: index, x: tuple[1], y: tuple[2] });
-                prevPos = { x: tuple[6], y: tuple[7] };
+                curPos = { x: tuple[6], y: tuple[7] };
+                prevPos = curPos;
                 break;
         }
         prevTuple = tuple;
@@ -81,6 +87,17 @@ function RenderXYs({ xys, ...rest }: { xys: XY[]; } & React.SVGAttributes<SVGEle
     </>);
 }
 
+function RenderCXYs({ cxys, ...rest }: { cxys: CXY[]; } & React.SVGAttributes<SVGElement>) {
+    rest = { r: "5", stroke: "red", fill: "tomato", ...rest };
+    return (<>
+        {cxys.map((cxy, index) =>
+            <circle cx={cxy.c.x} cy={cxy.c.y} {...rest} key={index}>
+                <title>{index}: x:{cxy.c.x} y: {cxy.c.y}</title>
+            </circle>
+        )}
+    </>);
+}
+
 function SimpleCurve() {
     //const path1 = 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34'; //h10v30
     const path1 = 'M 0,5    S 2,-2  4,5    S 7,8   8,4    t 0.2,-2    h10    v10    h3    v10    h-24    v-30    h50';
@@ -89,7 +106,7 @@ function SimpleCurve() {
     const tuples: SvgTuple[] = parsePathString(path2);
     const tuplesAbs = pathToAbsolute(tuples);
     const points: XY[] = getPoints(tuplesAbs);
-    const cpoints: XY[] = getControlPoints(tuplesAbs);
+    const cpoints: CXY[] = getControlPoints(tuplesAbs);
 
     //printTuples(tuplesAbs);
 
@@ -99,7 +116,7 @@ function SimpleCurve() {
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
                     <MarkGrid x={-200} y={-200} visible={true} />
                     <RenderXYs xys={points} />
-                    <RenderXYs xys={cpoints} fill="green" r="2" />
+                    <RenderCXYs cxys={cpoints} fill="green" r="2" />
                     {/* <path d={path1} fill="none" stroke="red" /> */}
                     <path d={path2} fill="none" stroke="red" />
                 </svg>

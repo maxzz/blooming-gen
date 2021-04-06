@@ -1,6 +1,11 @@
 export type XY = {
     x: number;
     y: number;
+}
+
+export type CXY = {
+    p: XY; // point
+    c: XY; // control point
     i?: number; // SvgTuple index, as backref to SvgTuple[]
 }
 
