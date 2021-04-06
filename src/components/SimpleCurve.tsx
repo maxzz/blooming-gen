@@ -77,7 +77,7 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
 }
 
 function RenderXYs({ xys, ...rest }: { xys: XY[]; } & React.SVGAttributes<SVGElement>) {
-    rest = { r: "5", stroke: "red", fill: "tomato", ...rest };
+    rest = { r: "5", stroke: "red", fill: "orange", ...rest };
     return (<>
         {xys.map((xy, index) =>
             <circle cx={xy.x} cy={xy.y} {...rest} key={index}>
@@ -88,12 +88,14 @@ function RenderXYs({ xys, ...rest }: { xys: XY[]; } & React.SVGAttributes<SVGEle
 }
 
 function RenderCXYs({ cxys, ...rest }: { cxys: CXY[]; } & React.SVGAttributes<SVGElement>) {
-    rest = { r: "5", stroke: "red", fill: "tomato", ...rest };
+    rest = { r: "5", stroke: "maroon", strokeWidth: '.4', fill: "tomato", ...rest };
     return (<>
-        {cxys.map((cxy, index) =>
+        {cxys.map((cxy, index) => <>
             <circle cx={cxy.c.x} cy={cxy.c.y} {...rest} key={index}>
-                <title>{index}: x:{cxy.c.x} y: {cxy.c.y}</title>
+                <title>{cxy.i}: x:{cxy.c.x} y: {cxy.c.y}</title>
             </circle>
+            <line x1={cxy.p.x} y1={cxy.p.y} x2={cxy.c.x} y2={cxy.c.y} {...rest} strokeDasharray=".5 .5" />
+            </>
         )}
     </>);
 }
