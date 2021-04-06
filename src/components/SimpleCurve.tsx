@@ -29,18 +29,13 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 break;
             case 'S': {
                 curPos = { x: tuple[3], y: tuple[4] };
-                let prevCtrl: XY;
                 switch (prevTuple[0]) {
                     case 'C':
                     case 'S':
                         let ofs = prevTuple[0] === 'C' ? 3 : 1;
-                        prevCtrl = { x: prevTuple[ofs] - prevTuple[ofs+2], y: prevTuple[ofs+1] - prevTuple[ofs+3] }; // TODO: reflection
-                        prevCtrl.x = prevPos.x - prevCtrl.x;
-                        prevCtrl.y = prevPos.y - prevCtrl.y;
+                        let prevCtrl: XY = { x: prevPos.x - (prevTuple[ofs] - prevTuple[ofs+2]), y: prevPos.y - (prevTuple[ofs+1] - prevTuple[ofs+3]) }; // reflection
                         rv.push({ i: index, n: c, p: prevPos, c: prevCtrl });
                         break;
-                    default:
-                        prevCtrl = prevPos;
                 }
                 rv.push({ i: index, n: c, p: curPos, c: { x: tuple[1], y: tuple[2] } });
                 prevPos = curPos;
@@ -48,6 +43,7 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
             }
             case 'Q':
                 curPos = { x: tuple[3], y: tuple[4] };
+                rv.push({ i: index, n: c, p: { x: prevPos.x, y: prevPos.y }, c: { x: tuple[1], y: tuple[2] } });
                 rv.push({ i: index, n: c, p: curPos, c: { x: tuple[1], y: tuple[2] } });
                 prevPos = curPos;
                 break;
@@ -110,7 +106,8 @@ function SimpleCurve() {
     //const path1 = 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34'; //h10v30
     const path1 = 'M 0,5    S 2,-2  4,5    S 7,8   8,4    t 0.2,-2    h10    v10    h3    v10    h-24    v-30    h50';
     // const path2 = 'M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z'; // h60
-    const path2 = 'M 20,100    S 30,40 50,100    S 100,80 100,100'; //'M 2,10    S 3,4 5,10    S 10,8 10,10' * 10
+    // const path2 = 'M 20,100    S 30,40 50,100    S 100,80 100,100'; //'M 2,10    S 3,4 5,10    S 10,8 10,10' * 10
+    const path2 = 'M20,20    Q80,20 80,80    Q140,20 180,180'; //'M2,2    Q8,2 8,8    Q14,2 18,18' * 10
 
     const tuples: SvgTuple[] = parsePathString(path2);
     const tuplesAbs = pathToAbsolute(tuples);
