@@ -9,14 +9,37 @@ function getPoints(tuplesAbs: SvgTuple[]): XY[] {
     let prevPos: XY = { x: 0, y: 0 };
     tuplesAbs.forEach((tuple: SvgTuple) => {
         let c = tuple[0];
-        switch (c) {
+        switch (c) { // abs path has only uppercase commands
             case 'M':
+            case 'L':
+            case 'T':
                 curPos = { x: tuple[1], y: tuple[2] };
                 rv.push(curPos);
                 prevPos = curPos;
                 break;
             case 'H':
                 curPos = { x: tuple[1], y: prevPos.y };
+                rv.push(curPos);
+                prevPos = curPos;
+                break;
+            case 'V':
+                curPos = { x: prevPos.x, y: tuple[1] };
+                rv.push(curPos);
+                prevPos = curPos;
+                break;
+            case 'C':
+                curPos = { x: tuple[5], y: tuple[6] };
+                rv.push(curPos);
+                prevPos = curPos;
+                break;
+            case 'S':
+            case 'Q':
+                curPos = { x: tuple[3], y: tuple[4] };
+                rv.push(curPos);
+                prevPos = curPos;
+                break;
+            case 'A':
+                curPos = { x: tuple[6], y: tuple[7] };
                 rv.push(curPos);
                 prevPos = curPos;
                 break;
@@ -37,7 +60,7 @@ function RenderXYs({ xys, ...rest }: { xys: XY[] } & React.SVGAttributes<SVGElem
 }
 
 function SimpleCurve() {
-    const path = 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34h10';
+    const path = 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34h10v30';
     const tuples: SvgTuple[] = parsePathString(path);
     const tuplesAbs = pathToAbsolute(tuples);
     const points: XY[] = getPoints(tuplesAbs);
