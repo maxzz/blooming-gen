@@ -28,15 +28,17 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 prevPos = curPos;
                 break;
             case 'S': {
+                curPos = { x: tuple[3], y: tuple[4] };
                 let prevCtrl: XY;
                 switch (prevTuple[0]) {
                     case 'C':
-                        prevCtrl = { x: prevTuple[3], y: prevTuple[4] }; // TODO: reflection
+                        prevCtrl = { x: prevTuple[3] - curPos.x, y: prevTuple[4] - curPos.y }; // TODO: reflection
                         break;
                     default:
                         prevCtrl = prevPos;
                 }
-                curPos = { x: tuple[3], y: tuple[4] };
+                prevCtrl.x = curPos.x - prevCtrl.x;
+                prevCtrl.y = curPos.y - prevCtrl.y;
                 rv.push({ i: index, n: c, p: curPos, c: prevCtrl });
                 rv.push({ i: index, n: c, p: curPos, c: { x: tuple[1], y: tuple[2] } });
                 prevPos = curPos;
@@ -89,7 +91,7 @@ function RenderXYs({ xys, ...rest }: { xys: XY[]; } & React.SVGAttributes<SVGEle
 }
 
 function RenderCXYs({ cxys, ...rest }: { cxys: CXY[]; } & React.SVGAttributes<SVGElement>) {
-    rest = { r: "5", stroke: "maroon", strokeWidth: '.4', fill: "tomato", ...rest };
+    rest = { r: "2", stroke: "maroon", strokeWidth: '.4', fill: "tomato", ...rest };
     return (<>
         {cxys.map((cxy, index) =>
             <React.Fragment key={index}>
@@ -105,7 +107,8 @@ function RenderCXYs({ cxys, ...rest }: { cxys: CXY[]; } & React.SVGAttributes<SV
 function SimpleCurve() {
     //const path1 = 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34'; //h10v30
     const path1 = 'M 0,5    S 2,-2  4,5    S 7,8   8,4    t 0.2,-2    h10    v10    h3    v10    h-24    v-30    h50';
-    const path2 = 'M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z'; // h60
+    // const path2 = 'M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z'; // h60
+    const path2 = 'M 20,100    S 30,40 50,100    S 100,80 100,100'; //'M 2,10    S 3,4 5,10    S 10,8 10,10' * 10
 
     const tuples: SvgTuple[] = parsePathString(path2);
     const tuplesAbs = pathToAbsolute(tuples);
@@ -120,7 +123,7 @@ function SimpleCurve() {
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
                     <MarkGrid x={-200} y={-200} visible={true} />
                     <RenderXYs xys={points} />
-                    <RenderCXYs cxys={cpoints} fill="green" r="2" />
+                    <RenderCXYs cxys={cpoints} />
                     {/* <path d={path1} fill="none" stroke="red" /> */}
                     <path d={path2} fill="none" stroke="red" />
                 </svg>
