@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MarkGrid from './SvgGrid';
-import { CXY, getPoints, parsePathString, pathToAbsolute, printTuples, SvgTuple, WH, XY } from './svg-utils';
+import { CXY, getPoints, parsePathString, pathToAbsolute, printCXYs, printTuples, SvgTuple, WH, XY } from './svg-utils';
 
 export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     let rv: CXY[] = [];
@@ -32,14 +32,16 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 let prevCtrl: XY;
                 switch (prevTuple[0]) {
                     case 'C':
-                        prevCtrl = { x: prevTuple[3] - curPos.x, y: prevTuple[4] - curPos.y }; // TODO: reflection
+                    case 'S':
+                        let ofs = prevTuple[0] === 'C' ? 3 : 1;
+                        prevCtrl = { x: prevTuple[ofs] - prevTuple[ofs+2], y: prevTuple[ofs+1] - prevTuple[ofs+3] }; // TODO: reflection
+                        prevCtrl.x = prevPos.x - prevCtrl.x;
+                        prevCtrl.y = prevPos.y - prevCtrl.y;
+                        rv.push({ i: index, n: c, p: prevPos, c: prevCtrl });
                         break;
                     default:
                         prevCtrl = prevPos;
                 }
-                prevCtrl.x = curPos.x - prevCtrl.x;
-                prevCtrl.y = curPos.y - prevCtrl.y;
-                rv.push({ i: index, n: c, p: curPos, c: prevCtrl });
                 rv.push({ i: index, n: c, p: curPos, c: { x: tuple[1], y: tuple[2] } });
                 prevPos = curPos;
                 break;
@@ -116,6 +118,7 @@ function SimpleCurve() {
     const cpoints: CXY[] = getControlPoints(tuplesAbs);
 
     //printTuples(tuplesAbs);
+    printCXYs(cpoints);
 
     return (
         <div className="pt-4 max-w-md mx-auto bg-indigo-100">
