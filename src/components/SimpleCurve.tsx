@@ -22,25 +22,25 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): XY[] {
                 prevPos = { x: prevPos.x, y: tuple[1] };
                 break;
             case 'C':
-                rv.push({ x: tuple[1], y: tuple[2] }, { x: tuple[3], y: tuple[4] });
+                rv.push({ i: index, x: tuple[1], y: tuple[2] }, { i: index,  x: tuple[3], y: tuple[4] });
                 prevPos = { x: tuple[5], y: tuple[6] };
                 break;
             case 'S': {
                 let prevCtrl: XY;
                 switch (prevTuple[0]) {
                     case 'C':
-                        prevCtrl = { x: prevTuple[3], y: prevTuple[4] }; // TODO: reflection
+                        prevCtrl = { i: index, x: prevTuple[3], y: prevTuple[4] }; // TODO: reflection
                         break;
                     default:
                         prevCtrl = prevPos;
                 }
-                rv.push(prevCtrl);
-                rv.push({ x: tuple[1], y: tuple[2] });
+                rv.push({ i: index, ...prevCtrl});
+                rv.push({ i: index, x: tuple[1], y: tuple[2] });
                 prevPos = { x: tuple[3], y: tuple[4] };
                 break;
             }
             case 'Q':
-                rv.push({ x: tuple[1], y: tuple[2] });
+                rv.push({ i: index, x: tuple[1], y: tuple[2] });
                 prevPos = { x: tuple[3], y: tuple[4] };
                 break;
             case 'T': {
@@ -56,12 +56,12 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): XY[] {
                     default:
                         prevCtrl = prevPos;
                 }
-                rv.push(prevCtrl);
+                rv.push({ i: index, ...prevCtrl});
                 prevPos = { x: tuple[1], y: tuple[2] };
                 break;
             }
             case 'A':
-                rv.push({ x: tuple[1], y: tuple[2] });
+                //rv.push({ i: index, x: tuple[1], y: tuple[2] });
                 prevPos = { x: tuple[6], y: tuple[7] };
                 break;
         }
@@ -83,8 +83,8 @@ function RenderXYs({ xys, ...rest }: { xys: XY[]; } & React.SVGAttributes<SVGEle
 
 function SimpleCurve() {
     //const path1 = 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34'; //h10v30
-    const path1 = 'M 0,5   S 2,-2  4,5  S 7,8   8,4  t 0.2,-2 h10 v10 h3 v10 h-24 v-30 h50';
-    const path2 = 'M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z';
+    const path1 = 'M 0,5    S 2,-2  4,5    S 7,8   8,4    t 0.2,-2    h10    v10    h3    v10    h-24    v-30    h50';
+    const path2 = 'M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z'; // h60
 
     const tuples: SvgTuple[] = parsePathString(path2);
     const tuplesAbs = pathToAbsolute(tuples);
