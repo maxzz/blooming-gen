@@ -6,7 +6,8 @@ export type XY = {
 export type CXY = {
     p: XY; // point
     c: XY; // control point
-    i?: number; // SvgTuple index, as backref to SvgTuple[]
+    i: number; // SvgTuple index, as backref to SvgTuple[]
+    n: string; // point command name
 }
 
 export type WH = { // Width and Height

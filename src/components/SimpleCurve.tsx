@@ -23,8 +23,8 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 break;
             case 'C':
                 curPos = { x: tuple[5], y: tuple[6] };
-                rv.push({ i: index, p: curPos, c: { x: tuple[1], y: tuple[2] }});
-                rv.push({ i: index, p: curPos, c: { x: tuple[3], y: tuple[4] }});
+                rv.push({ i: index, n: c, p: curPos, c: { x: tuple[1], y: tuple[2] }});
+                rv.push({ i: index, n: c, p: curPos, c: { x: tuple[3], y: tuple[4] }});
                 prevPos = curPos;
                 break;
             case 'S': {
@@ -37,14 +37,14 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                         prevCtrl = prevPos;
                 }
                 curPos = { x: tuple[3], y: tuple[4] };
-                rv.push({ i: index, p: curPos, c: prevCtrl});
-                rv.push({ i: index, p: curPos, c: { x: tuple[1], y: tuple[2] }});
+                rv.push({ i: index, n: c, p: curPos, c: prevCtrl});
+                rv.push({ i: index, n: c, p: curPos, c: { x: tuple[1], y: tuple[2] }});
                 prevPos = curPos;
                 break;
             }
             case 'Q':
                 curPos = { x: tuple[3], y: tuple[4] };
-                rv.push({ i: index, p: curPos, c: {x: tuple[1], y: tuple[2] }});
+                rv.push({ i: index, n: c, p: curPos, c: {x: tuple[1], y: tuple[2] }});
                 prevPos = curPos;
                 break;
             case 'T': {
@@ -61,7 +61,7 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                         prevCtrl = prevPos;
                 }
                 curPos = { x: tuple[1], y: tuple[2] };
-                rv.push({ i: index, p: curPos, c: prevCtrl});
+                rv.push({ i: index, n: c, p: curPos, c: prevCtrl});
                 prevPos = curPos;
                 break;
             }
@@ -92,7 +92,7 @@ function RenderCXYs({ cxys, ...rest }: { cxys: CXY[]; } & React.SVGAttributes<SV
     return (<>
         {cxys.map((cxy, index) => <>
             <circle cx={cxy.c.x} cy={cxy.c.y} {...rest} key={index}>
-                <title>{cxy.i}: x:{cxy.c.x} y: {cxy.c.y}</title>
+                <title>Command {cxy.n}: {cxy.i}: x:{cxy.c.x} y: {cxy.c.y}</title>
             </circle>
             <line x1={cxy.p.x} y1={cxy.p.y} x2={cxy.c.x} y2={cxy.c.y} {...rest} strokeDasharray=".5 .5" />
             </>
