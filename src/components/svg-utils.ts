@@ -32,6 +32,10 @@ export type SvgTuple = any[]; //type SvgTuple = [PathCmd, ...number[]];
         2: ["S", 30.43, 0.34, 30.43, 0.34]
 */
 
+export function printTuples(tuplesAbs: SvgTuple[]) {
+    console.log('----------------- abs tuples: -----------------', `\n${tuplesAbs.map((tuple => JSON.stringify(tuple))).join('\n')}\n-----------------`);
+}
+
 const reSpaces = '\x09\x0a\x0b\x0c\x0d\x20\xa0\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029';
 const rePathCommand = new RegExp(`([a-z])[${reSpaces},]*((-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?[${reSpaces}]*,?[${reSpaces}]*)+)`, 'ig');
 const rePathValues = new RegExp(`(-?\\d*\\.?\\d*(?:e[\\-+]?\\d+)?)[${reSpaces}]*,?[${reSpaces}]*`, 'ig');
@@ -146,3 +150,49 @@ export function pathToAbsolute(pathArray: SvgTuple[]): SvgTuple[] {
     }
     return res;
 }
+
+export function getPoints(tuplesAbs: SvgTuple[]): XY[] {
+    let rv: XY[] = [];
+    let curPos: XY;
+    let prevPos: XY = { x: 0, y: 0 };
+    tuplesAbs.forEach((tuple: SvgTuple) => {
+        let c = tuple[0];
+        switch (c) { // abs path has only uppercase commands
+            case 'M':
+            case 'L':
+            case 'T':
+                curPos = { x: tuple[1], y: tuple[2] };
+                rv.push(curPos);
+                prevPos = curPos;
+                break;
+            case 'H':
+                curPos = { x: tuple[1], y: prevPos.y };
+                rv.push(curPos);
+                prevPos = curPos;
+                break;
+            case 'V':
+                curPos = { x: prevPos.x, y: tuple[1] };
+                rv.push(curPos);
+                prevPos = curPos;
+                break;
+            case 'C':
+                curPos = { x: tuple[5], y: tuple[6] };
+                rv.push(curPos);
+                prevPos = curPos;
+                break;
+            case 'S':
+            case 'Q':
+                curPos = { x: tuple[3], y: tuple[4] };
+                rv.push(curPos);
+                prevPos = curPos;
+                break;
+            case 'A':
+                curPos = { x: tuple[6], y: tuple[7] };
+                rv.push(curPos);
+                prevPos = curPos;
+                break;
+        }
+    });
+    return rv;
+}
+

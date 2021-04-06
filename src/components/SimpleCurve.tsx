@@ -1,52 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MarkGrid from './SvgGrid';
-import { parsePathString, pathToAbsolute, SvgTuple, WH, XY } from './svg-utils';
-
-function getPoints(tuplesAbs: SvgTuple[]): XY[] {
-    let rv: XY[] = [];
-    let curPos: XY;
-    let prevPos: XY = { x: 0, y: 0 };
-    tuplesAbs.forEach((tuple: SvgTuple) => {
-        let c = tuple[0];
-        switch (c) { // abs path has only uppercase commands
-            case 'M':
-            case 'L':
-            case 'T':
-                curPos = { x: tuple[1], y: tuple[2] };
-                rv.push(curPos);
-                prevPos = curPos;
-                break;
-            case 'H':
-                curPos = { x: tuple[1], y: prevPos.y };
-                rv.push(curPos);
-                prevPos = curPos;
-                break;
-            case 'V':
-                curPos = { x: prevPos.x, y: tuple[1] };
-                rv.push(curPos);
-                prevPos = curPos;
-                break;
-            case 'C':
-                curPos = { x: tuple[5], y: tuple[6] };
-                rv.push(curPos);
-                prevPos = curPos;
-                break;
-            case 'S':
-            case 'Q':
-                curPos = { x: tuple[3], y: tuple[4] };
-                rv.push(curPos);
-                prevPos = curPos;
-                break;
-            case 'A':
-                curPos = { x: tuple[6], y: tuple[7] };
-                rv.push(curPos);
-                prevPos = curPos;
-                break;
-        }
-    });
-    return rv;
-}
+import { getPoints, parsePathString, pathToAbsolute, printTuples, SvgTuple, WH, XY } from './svg-utils';
 
 function RenderXYs({ xys, ...rest }: { xys: XY[] } & React.SVGAttributes<SVGElement> ) {
     rest = {r: "5", stroke: "red", fill: "tomato", ...rest};
@@ -60,12 +15,14 @@ function RenderXYs({ xys, ...rest }: { xys: XY[] } & React.SVGAttributes<SVGElem
 }
 
 function SimpleCurve() {
-    const path = 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34h10v30';
-    const tuples: SvgTuple[] = parsePathString(path);
+    const path1 = 'M18,69.48s-.6-11.27-3-30.86S30.43.34,30.43.34h10v30';
+    const path2 = 'M18,69.48S33.7,60,33.7,49s-4.46-16.32-6.24-24.63,3-24,3-24A142.07,142.07,0,0,0,14.11,12.8C7.71,18.56.76,25.27.16,36.84S18,69.48,18,69.48Z';
+
+    const tuples: SvgTuple[] = parsePathString(path2);
     const tuplesAbs = pathToAbsolute(tuples);
     const points: XY[] = getPoints(tuplesAbs);
 
-    console.log('----------------- abs tuples: -----------------', `\n${tuplesAbs.map((tuple => JSON.stringify(tuple))).join('\n')}\n-----------------`);
+    printTuples(tuplesAbs);
 
     return (
         <div className="pt-4 max-w-md mx-auto bg-indigo-100">
@@ -73,7 +30,8 @@ function SimpleCurve() {
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
                     <MarkGrid x={-200} y={-200} visible={true} />
                     <RenderXYs xys={points} />
-                    <path d={path} fill="none" stroke="red" />
+                    {/* <path d={path1} fill="none" stroke="red" /> */}
+                    <path d={path2} fill="none" stroke="red" />
                 </svg>
             </div>
 
