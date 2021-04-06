@@ -1,6 +1,7 @@
 export type XY = {
     x: number;
     y: number;
+    i?: number; // SvgTuple index, as backref to SvgTuple[]
 }
 
 export type WH = { // Width and Height
@@ -153,10 +154,10 @@ export function pathToAbsolute(pathArray: SvgTuple[]): SvgTuple[] {
 
 export function getPoints(tuplesAbs: SvgTuple[]): XY[] {
     let rv: XY[] = [];
-    let curPos: XY;
     let prevPos: XY = { x: 0, y: 0 };
     tuplesAbs.forEach((tuple: SvgTuple) => {
         let c = tuple[0];
+        let curPos: XY;
         switch (c) { // abs path has only uppercase commands
             case 'M':
             case 'L':
