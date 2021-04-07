@@ -3,17 +3,10 @@ import PropTypes from 'prop-types';
 import MarkGrid from './SvgGrid';
 import { CXY, getPoints, parsePathString, pathToAbsolute, printCXYs, printTuples, SvgTuple, WH, XY } from './svg-utils';
 
-function endPoint(tuple: SvgTuple): XY {
+function endPointOfs(tuple: SvgTuple): number | undefined {
     // TODO: still not covered some cases and marked as 0.
     let endPointOffsets = {a: 6, c: 5, o: 0, h: 0, l: 1, m: 1, r: 0, q: 3, s: 3, t: 1, v: 0, u: 0, z: 0};
-    let ofs = endPointOffsets[tuple[0].toLowerCase() as keyof typeof endPointOffsets];
-    return ofs ? {
-        x: tuple[ofs],
-        y: tuple[ofs+1],
-    } : {
-        x: 0,
-        y: 0,
-    }
+    return endPointOffsets[tuple[0].toLowerCase() as keyof typeof endPointOffsets];
 } 
 
 export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
@@ -81,8 +74,8 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
 
                         let prevToPrev = items[i - 2];
                         if (prevToPrev) {
-                            let ofs = prevToPrev[0] === 'Q' ? 3 : (prevToPrev[0] === 'T' || prevToPrev[0] === 'M') ? 1 : -1;
-                            if (ofs >= 0) {
+                            let ofs = endPointOfs(prevToPrev);
+                            if (ofs) {
                                 prevToPrevPos = { x: prevToPrev[ofs], y: prevToPrev[ofs + 1] };
                             }
                         }
@@ -149,7 +142,7 @@ function SimpleCurve() {
     //const path2 = 'M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100'; //'M2,2    Q4,2 4,10    Q7,2 8,9    T 10,10    T 12,12    T14,10    T15,10    T16,10    T17,10' * 10
     //const path2 = 'M20,20    Q30,50 40,20    T60,20    T80,20';
     //const path2 = 'M20,20   L10,10   Q30,50 40,20    T60,20    T80,20';
-    const path2 = 'M20,20   T30,50 40,20    T60,20    T80,20';
+    const path2 = 'M 20 20 C 20 20 40 31 39 20 S 38 1 50 -12 S 59.3333 19.3333 96 -11 T 78 36 T 104 35';
 
     const tuples: SvgTuple[] = parsePathString(path2);
     const tuplesAbs = pathToAbsolute(tuples);
