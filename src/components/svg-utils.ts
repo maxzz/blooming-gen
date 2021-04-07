@@ -4,8 +4,8 @@ export type XY = {
 }
 
 export type CXY = {
-    p: XY; // point
-    c: XY; // control point
+    pt: XY; // point
+    cp: XY; // control point
     i: number; // SvgTuple index, as backref to SvgTuple[]
     n: string; // point command name
 }
