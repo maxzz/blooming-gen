@@ -58,83 +58,97 @@ export function parsePathString(pathString: string): SvgTuple[] {
 
     let paramCounts = {a: 7, c: 6, o: 2, h: 1, l: 2, m: 2, r: 4, q: 4, s: 4, t: 2, v: 1, u: 3, z: 0};
     let data: any[] = [];
+    let positions: number[] = [];
 
     pathString.replace(rePathCommand, function (a: string, svgCmd: string, svgCmdParams: string, d: string, ofs: number, ...rest: any[]) {
-        console.log(`-------------------\na: '${a}'\nb: '${svgCmd}'\nc: '${svgCmdParams}'\nd: '${d}'\nofs: ${ofs}\nrest: '${JSON.stringify(rest)}'`);
 
         /*
-            pathString.replace(rePathCommand, function (a: string, b: string, c: string, d: string, ofs: number, ...rest: any[]) {
-                console.log(`-------------------\nofs: ${ofs}\na: ${a}\nb: ${b}\nd: ${d}\nrest: ${JSON.stringify(rest)}`); ...
+            pathString.replace(rePathCommand, function (a: string, svgCmd: string, svgCmdParams: string, d: string, ofs: number, ...rest: any[]) {
+                console.log(`-------------------\nofs: ${ofs}      d: '${d}' rest: '${JSON.stringify(rest)}'\n     a: '${a}'\n     b: '${svgCmd}'\n     c: '${svgCmdParams}'`); ...
 
+            ofs: 0      d: '20    ' rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+                a: 'M20,20    '
+                b: 'M'
+                c: '20,20    '
+                    | param ofs: 0 a: '20,' b: '20' rest: '["20,20    "]'
+                    | param ofs: 3 a: '20    ' b: '20' rest: '["20,20    "]'
+                    | param ofs: 9 a: '' b: '' rest: '["20,20    "]'
             -------------------
-            a: 'M20,20    '
-            b: 'M'
-            c: '20,20    '
-            d: '20    '
-            ofs: 0
-            rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+            ofs: 10      d: '100    ' rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+                a: 'Q40,20 40,100    '
+                b: 'Q'
+                c: '40,20 40,100    '
+                    | param ofs: 0 a: '40,' b: '40' rest: '["40,20 40,100    "]'
+                    | param ofs: 3 a: '20 ' b: '20' rest: '["40,20 40,100    "]'
+                    | param ofs: 6 a: '40,' b: '40' rest: '["40,20 40,100    "]'
+                    | param ofs: 9 a: '100    ' b: '100' rest: '["40,20 40,100    "]'
+                    | param ofs: 16 a: '' b: '' rest: '["40,20 40,100    "]'
             -------------------
-            a: 'Q40,20 40,100    '
-            b: 'Q'
-            c: '40,20 40,100    '
-            d: '100    '
-            ofs: 10
-            rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+            ofs: 27      d: '90    ' rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+                a: 'Q70,20 80,90    '
+                b: 'Q'
+                c: '70,20 80,90    '
+                    | param ofs: 0 a: '70,' b: '70' rest: '["70,20 80,90    "]'
+                    | param ofs: 3 a: '20 ' b: '20' rest: '["70,20 80,90    "]'
+                    | param ofs: 6 a: '80,' b: '80' rest: '["70,20 80,90    "]'
+                    | param ofs: 9 a: '90    ' b: '90' rest: '["70,20 80,90    "]'
+                    | param ofs: 15 a: '' b: '' rest: '["70,20 80,90    "]'
             -------------------
-            a: 'Q70,20 80,90    '
-            b: 'Q'
-            c: '70,20 80,90    '
-            d: '90    '
-            ofs: 27
-            rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+            ofs: 43      d: '100    ' rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+                a: 'T 100,100    '
+                b: 'T'
+                c: '100,100    '
+                    | param ofs: 0 a: '100,' b: '100' rest: '["100,100    "]'
+                    | param ofs: 4 a: '100    ' b: '100' rest: '["100,100    "]'
+                    | param ofs: 11 a: '' b: '' rest: '["100,100    "]'
             -------------------
-            a: 'T 100,100    '
-            b: 'T'
-            c: '100,100    '
-            d: '100    '
-            ofs: 43
-            rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+            ofs: 56      d: '120    ' rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+                a: 'T 120,120    '
+                b: 'T'
+                c: '120,120    '
+                    | param ofs: 0 a: '120,' b: '120' rest: '["120,120    "]'
+                    | param ofs: 4 a: '120    ' b: '120' rest: '["120,120    "]'
+                    | param ofs: 11 a: '' b: '' rest: '["120,120    "]'
             -------------------
-            a: 'T 120,120    '
-            b: 'T'
-            c: '120,120    '
-            d: '120    '
-            ofs: 56
-            rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+            ofs: 69      d: '100    ' rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+                a: 'T140,100    '
+                b: 'T'
+                c: '140,100    '
+                    | param ofs: 0 a: '140,' b: '140' rest: '["140,100    "]'
+                    | param ofs: 4 a: '100    ' b: '100' rest: '["140,100    "]'
+                    | param ofs: 11 a: '' b: '' rest: '["140,100    "]'
             -------------------
-            a: 'T140,100    '
-            b: 'T'
-            c: '140,100    '
-            d: '100    '
-            ofs: 69
-            rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+            ofs: 81      d: '100    ' rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+                a: 'T150,100    '
+                b: 'T'
+                c: '150,100    '
+                    | param ofs: 0 a: '150,' b: '150' rest: '["150,100    "]'
+                    | param ofs: 4 a: '100    ' b: '100' rest: '["150,100    "]'
+                    | param ofs: 11 a: '' b: '' rest: '["150,100    "]'
             -------------------
-            a: 'T150,100    '
-            b: 'T'
-            c: '150,100    '
-            d: '100    '
-            ofs: 81
-            rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+            ofs: 93      d: '100    ' rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+                a: 'T160,100    '
+                b: 'T'
+                c: '160,100    '
+                    | param ofs: 0 a: '160,' b: '160' rest: '["160,100    "]'
+                    | param ofs: 4 a: '100    ' b: '100' rest: '["160,100    "]'
+                    | param ofs: 11 a: '' b: '' rest: '["160,100    "]'
             -------------------
-            a: 'T160,100    '
-            b: 'T'
-            c: '160,100    '
-            d: '100    '
-            ofs: 93
-            rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
-            -------------------
-            a: 'T170,100'
-            b: 'T'
-            c: '170,100'
-            d: '100'
-            ofs: 105
-            rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+            ofs: 105      d: '100' rest: '["M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100"]'
+                a: 'T170,100'
+                b: 'T'
+                c: '170,100'
+                    | param ofs: 0 a: '170,' b: '170' rest: '["170,100"]'
+                    | param ofs: 4 a: '100' b: '100' rest: '["170,100"]'
+                    | param ofs: 7 a: '' b: '' rest: '["170,100"]'
         */
 
         let params: any[] = [];
         let name = svgCmd.toLowerCase() as keyof typeof paramCounts;
 
-        svgCmdParams.replace(rePathValues, function (a: string, b: string) {
+        svgCmdParams.replace(rePathValues, function (a: string, b: string, paramOfs: number, ...rest: any[]) {
+            //console.log(`        | param ofs: ${paramOfs} a: '${a}' b: '${b}' rest: '${JSON.stringify(rest)}'`);
+
             b && params.push(+b);
         } as any);
 
