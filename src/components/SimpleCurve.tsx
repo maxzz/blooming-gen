@@ -8,8 +8,6 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     let prevPos: XY = { x: 0, y: 0 };
     let prevTuple: SvgTuple;
     tuplesAbs.forEach((tuple: SvgTuple, index: number, items: SvgTuple[]) => {
-        console.log(`i: ${index}------------------------ tuple: ${JSON.stringify(tuple)}`);
-
         let c = tuple[0];
         let curPos: XY;
         switch (c) { // abs path has only uppercase commands
@@ -56,40 +54,31 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 function backtrackCP(i: number, cp: XY): XY {
                     let prev = items[i - 1];
                     if (!prev) {
-                        console.log(`done`);
                         return cp;
                     }
-                    console.log(`backtrack: i: ${i} curPos: ${JSON.stringify(curPos)} prev: ${JSON.stringify(prev)}`);
 
                     if (prev[0] === 'Q') { // Q, x1, y1, x, y
                         return {
                             x: cp.x + (-prev[1] + cp.x),
                             y: cp.y + (-prev[2] + cp.y),
-                        }
+                        };
                     }
                     if (prev[0] === 'T') { // T, x, y
-                        let prevToPrevPos: XY = {x: 0, y: 0};
+                        let prevToPrevPos: XY = { x: 0, y: 0 };
 
                         let prevToPrev = items[i - 2];
                         if (prevToPrev) {
                             let ofs = prevToPrev[0] === 'Q' ? 3 : prevToPrev[0] === 'T' ? 1 : -1;
                             if (ofs >= 0) {
-                                prevToPrevPos = {x: prevToPrev[ofs], y: prevToPrev[ofs+1]};
+                                prevToPrevPos = { x: prevToPrev[ofs], y: prevToPrev[ofs + 1] };
                             }
                         }
 
-                        let prevCP = backtrackCP(i - 1, {
-                            x: prevToPrevPos.x,
-                            y: prevToPrevPos.y,
-                        });
-                        // let prevCP = backtrackCP(i - 1, {
-                        //     x: prev[1],
-                        //     y: prev[2],
-                        // });
+                        let prevCP = backtrackCP(i - 1, prevToPrevPos);
                         return {
-                            x: 2*cp.x - (prevCP.x),
-                            y: 2*cp.y - (prevCP.y),
-                        }
+                            x: 2 * cp.x - prevCP.x,
+                            y: 2 * cp.y - prevCP.y,
+                        };
                     }
                     return cp;
                 }
@@ -111,69 +100,6 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     });
     return rv;
 }
-
-                /*
-                // function backtrackCP(i: number): SvgTuple {
-                // }
-
-                    function backtrackCP(i: number, cp: XY): XY {
-                        let prev = items[i - 1];
-                        if (!prev) {
-                            console.log(`done`);
-                            return cp;
-                        }
-                        console.log(`backtrack: i: ${i} curPos: ${JSON.stringify(curPos)} prev: ${JSON.stringify(prev)}`);
-
-                        if (prev[0] === 'Q') { // Q, x1, y1, x, y
-                            return {
-                                x: cp.x + (-prev[1] + cp.x),
-                                y: cp.y + (-prev[2] + cp.y),
-                            }
-                        }
-                        if (prev[0] === 'T') { // T, x, y
-                            let prevCP = backtrackCP(i - 1, {
-                                x: prev[1],
-                                y: prev[2],
-                            });
-                            return {
-                                x: 2*cp.x - (prevCP.x),
-                                y: 2*cp.y - (prevCP.y),
-                            }
-                        }
-                        return cp;
-                    }
-                    let cp: XY = backtrackCP(index, prevPos);
-                    rv.push({ i: index, n: c, pt: prevPos, cp: cp });
-                    rv.push({ i: index, n: c, pt: curPos, cp: cp });
-                */
-
-/*
-            case 'T': {
-                curPos = { x: tuple[1], y: tuple[2] };
-
-                let cp: XY;
-                let q;
-                for (q = index - 1; q >= 0; q--) {
-                    console.log(`backtrack: q: ${q} ${JSON.stringify(tuplesAbs[q])}`);
-                    if (tuplesAbs[q][0] === 'Q' || tuplesAbs[q][0] !== 'T') {
-                        break;
-                    }
-                }
-                if (q === -1 || tuplesAbs[q][0] !== 'Q') {
-                    cp = prevPos;
-                    console.log('NOT FOUND');
-                    
-                } else {
-                    for ( ; q <= index; q++) {
-                        let qTuple = tuplesAbs[q];
-                        console.log(`track: q: ${q} ${JSON.stringify(qTuple)}`);
-                    }
-                }
-
-                prevPos = curPos;
-                break;
-            }
-*/                    
 
 function RenderXYs({ xys, ...rest }: { xys: XY[]; } & React.SVGAttributes<SVGElement>) {
     rest = { r: "5", stroke: "red", fill: "orange", ...rest };
@@ -238,7 +164,7 @@ function SimpleCurve() {
                 <div className="w-72 h-72">
                     {/* <svg className="bg-red-100" viewBox="-10 -10 100 100" fill="none" stroke="green" strokeWidth=".7"> */}
                     {/* <svg className="" viewBox="-10 -10 100 100" fill="none" stroke="green" strokeWidth=".7" style={{background: 'radial-gradient(ellipse at center, #fefefe 0%, #cbeeff 100%)'}}> */}
-                    <svg className="" viewBox="-10 -10 100 100" fill="none" stroke="green" strokeWidth=".7" style={{background: 'radial-gradient(ellipse at center, #fefefe 0%, rgb(254, 226, 226) 100%)'}}>
+                    <svg className="" viewBox="-10 -10 100 100" fill="none" stroke="green" strokeWidth=".7" style={{ background: 'radial-gradient(ellipse at center, #fefefe 0%, rgb(254, 226, 226) 100%)' }}>
 
                         {/* <svg className="w-24 max-h-24 bg-indigo-400" viewBox="0 0 33.84 69.68" fill="none" stroke="green"> */}
                         <MarkGrid x={-10} y={-10} stroke="pink" strokeWidth="1" />
