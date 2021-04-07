@@ -53,26 +53,50 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
             case 'T': {
                 curPos = { x: tuple[1], y: tuple[2] };
 
-                let q;
-                for (q = index - 1; q >= 0; q--) {
-                    console.log(`backtrack: q: ${q} ${JSON.stringify(tuplesAbs[q])}`);
-                    if (tuplesAbs[q][0] === 'Q') {
-                        break;
+                function backtrackCP(i: number, cp: XY): XY {
+                    let prev = items[i - 1];
+                    if (!prev) {
+                        console.log(`done`);
+                        return cp;
                     }
-                    if (tuplesAbs[q][0] !== 'T') {
-                        break;
-                    }
-                }
-                if (q === -1) {
-                    console.log(`none: q: ${q}`);
-                }
-                else {
-                    console.log(`done: q: ${q}`);
-                }
+                    console.log(`backtrack: i: ${i} curPos: ${JSON.stringify(curPos)} prev: ${JSON.stringify(prev)}`);
 
-                if (q === -1 || tuplesAbs[q][0] !== 'Q') {
-                    console.log(`NOTHING: q: ${q}`);
+                    if (prev[0] === 'Q') { // Q, x1, y1, x, y
+                        return {
+                            x: cp.x + (-prev[1] + cp.x),
+                            y: cp.y + (-prev[2] + cp.y),
+                        }
+                    }
+                    if (prev[0] === 'T') { // T, x, y
+                        let prevToPrevPos: XY = {x: 0, y: 0};
+
+                        let prevToPrev = items[i - 2];
+                        if (prevToPrev) {
+                            let ofs = prevToPrev[0] === 'Q' ? 3 : prevToPrev[0] === 'T' ? 1 : -1;
+                            if (ofs >= 0) {
+                                prevToPrevPos = {x: prevToPrev[ofs], y: prevToPrev[ofs+1]};
+                            }
+                        }
+
+                        let prevCP = backtrackCP(i - 1, {
+                            x: prevToPrevPos.x,
+                            y: prevToPrevPos.y,
+                        });
+                        // let prevCP = backtrackCP(i - 1, {
+                        //     x: prev[1],
+                        //     y: prev[2],
+                        // });
+                        return {
+                            x: 2*cp.x - (prevCP.x),
+                            y: 2*cp.y - (prevCP.y),
+                        }
+                    }
+                    return cp;
                 }
+                let cp: XY = backtrackCP(index, prevPos);
+                rv.push({ i: index, n: c, pt: prevPos, cp: cp });
+                rv.push({ i: index, n: c, pt: curPos, cp: cp });
+
 
                 prevPos = curPos;
                 break;
@@ -91,6 +115,7 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 /*
                 // function backtrackCP(i: number): SvgTuple {
                 // }
+
                     function backtrackCP(i: number, cp: XY): XY {
                         let prev = items[i - 1];
                         if (!prev) {
@@ -121,6 +146,34 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                     rv.push({ i: index, n: c, pt: prevPos, cp: cp });
                     rv.push({ i: index, n: c, pt: curPos, cp: cp });
                 */
+
+/*
+            case 'T': {
+                curPos = { x: tuple[1], y: tuple[2] };
+
+                let cp: XY;
+                let q;
+                for (q = index - 1; q >= 0; q--) {
+                    console.log(`backtrack: q: ${q} ${JSON.stringify(tuplesAbs[q])}`);
+                    if (tuplesAbs[q][0] === 'Q' || tuplesAbs[q][0] !== 'T') {
+                        break;
+                    }
+                }
+                if (q === -1 || tuplesAbs[q][0] !== 'Q') {
+                    cp = prevPos;
+                    console.log('NOT FOUND');
+                    
+                } else {
+                    for ( ; q <= index; q++) {
+                        let qTuple = tuplesAbs[q];
+                        console.log(`track: q: ${q} ${JSON.stringify(qTuple)}`);
+                    }
+                }
+
+                prevPos = curPos;
+                break;
+            }
+*/                    
 
 function RenderXYs({ xys, ...rest }: { xys: XY[]; } & React.SVGAttributes<SVGElement>) {
     rest = { r: "5", stroke: "red", fill: "orange", ...rest };
