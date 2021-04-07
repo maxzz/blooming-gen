@@ -135,7 +135,8 @@ function SimpleCurve() {
     // const path2 = 'M20,20    Q80,20 80,80    Q140,20 180,180'; //'M2,2    Q8,2 8,8    Q14,2 18,18' * 10
     //const path2 = 'M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100'; //'M2,2    Q4,2 4,10    Q7,2 8,9    T 10,10    T 12,12    T14,10    T15,10    T16,10    T17,10' * 10
     //const path2 = 'M20,20    Q30,50 40,20    T60,20    T80,20';
-    const path2 = 'M20,20   L10,10   T30,50 40,20    T60,20    T80,20';
+    //const path2 = 'M20,20   L10,10   Q30,50 40,20    T60,20    T80,20';
+    const path2 = 'M20,20   T30,50 40,20    T60,20    T80,20';
 
     const tuples: SvgTuple[] = parsePathString(path2);
     const tuplesAbs = pathToAbsolute(tuples);
