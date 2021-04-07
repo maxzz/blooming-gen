@@ -3,6 +3,19 @@ import PropTypes from 'prop-types';
 import MarkGrid from './SvgGrid';
 import { CXY, getPoints, parsePathString, pathToAbsolute, printCXYs, printTuples, SvgTuple, WH, XY } from './svg-utils';
 
+function endPoint(tuple: SvgTuple): XY {
+    // TODO: still not covered some cases and marked as 0.
+    let endPointOffsets = {a: 6, c: 5, o: 0, h: 0, l: 1, m: 1, r: 0, q: 3, s: 3, t: 1, v: 0, u: 0, z: 0};
+    let ofs = endPointOffsets[tuple[0].toLowerCase() as keyof typeof endPointOffsets];
+    return ofs ? {
+        x: tuple[ofs],
+        y: tuple[ofs+1],
+    } : {
+        x: 0,
+        y: 0,
+    }
+} 
+
 export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     let rv: CXY[] = [];
     let prevPos: XY = { x: 0, y: 0 };
