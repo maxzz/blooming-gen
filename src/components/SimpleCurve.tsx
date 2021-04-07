@@ -68,7 +68,7 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
 
                         let prevToPrev = items[i - 2];
                         if (prevToPrev) {
-                            let ofs = prevToPrev[0] === 'Q' ? 3 : prevToPrev[0] === 'T' ? 1 : -1;
+                            let ofs = prevToPrev[0] === 'Q' ? 3 : (prevToPrev[0] === 'T' || prevToPrev[0] === 'M') ? 1 : -1;
                             if (ofs >= 0) {
                                 prevToPrevPos = { x: prevToPrev[ofs], y: prevToPrev[ofs + 1] };
                             }
