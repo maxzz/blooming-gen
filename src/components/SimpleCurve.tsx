@@ -8,6 +8,8 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     let prevPos: XY = { x: 0, y: 0 };
     let prevTuple: SvgTuple;
     tuplesAbs.forEach((tuple: SvgTuple, index: number, items: SvgTuple[]) => {
+        console.log(`i: ${index}------------------------ tuple: ${JSON.stringify(tuple)}`);
+
         let c = tuple[0];
         let curPos: XY;
         switch (c) { // abs path has only uppercase commands
@@ -50,32 +52,28 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 break;
             case 'T': {
                 curPos = { x: tuple[1], y: tuple[2] };
-                function backtrackCP(i: number, cp: XY): XY {
-                    let prev = items[i - 1];
-                    if (!prev) {
-                        return cp;
+
+                let q;
+                for (q = index - 1; q >= 0; q--) {
+                    console.log(`backtrack: q: ${q} ${JSON.stringify(tuplesAbs[q])}`);
+                    if (tuplesAbs[q][0] === 'Q') {
+                        break;
                     }
-                    if (prev[0] === 'Q') { // Q, x1, y1, x, y
-                        return {
-                            x: cp.x + (-prev[1] + cp.x),
-                            y: cp.y + (-prev[2] + cp.y),
-                        }
+                    if (tuplesAbs[q][0] !== 'T') {
+                        break;
                     }
-                    if (prev[0] === 'T') { // T, x, y
-                        let prevCP = backtrackCP(i - 1, {
-                            x: prev[1],
-                            y: prev[2],
-                        });
-                        return {
-                            x: 2*cp.x - (prevCP.x),
-                            y: 2*cp.y - (prevCP.y),
-                        }
-                    }
-                    return cp;
                 }
-                let cp: XY = backtrackCP(index, prevPos);
-                rv.push({ i: index, n: c, pt: prevPos, cp: cp });
-                rv.push({ i: index, n: c, pt: curPos, cp: cp });
+                if (q === -1) {
+                    console.log(`none: q: ${q}`);
+                }
+                else {
+                    console.log(`done: q: ${q}`);
+                }
+
+                if (q === -1 || tuplesAbs[q][0] !== 'Q') {
+                    console.log(`NOTHING: q: ${q}`);
+                }
+
                 prevPos = curPos;
                 break;
             }
@@ -89,6 +87,40 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     });
     return rv;
 }
+
+                /*
+                // function backtrackCP(i: number): SvgTuple {
+                // }
+                    function backtrackCP(i: number, cp: XY): XY {
+                        let prev = items[i - 1];
+                        if (!prev) {
+                            console.log(`done`);
+                            return cp;
+                        }
+                        console.log(`backtrack: i: ${i} curPos: ${JSON.stringify(curPos)} prev: ${JSON.stringify(prev)}`);
+
+                        if (prev[0] === 'Q') { // Q, x1, y1, x, y
+                            return {
+                                x: cp.x + (-prev[1] + cp.x),
+                                y: cp.y + (-prev[2] + cp.y),
+                            }
+                        }
+                        if (prev[0] === 'T') { // T, x, y
+                            let prevCP = backtrackCP(i - 1, {
+                                x: prev[1],
+                                y: prev[2],
+                            });
+                            return {
+                                x: 2*cp.x - (prevCP.x),
+                                y: 2*cp.y - (prevCP.y),
+                            }
+                        }
+                        return cp;
+                    }
+                    let cp: XY = backtrackCP(index, prevPos);
+                    rv.push({ i: index, n: c, pt: prevPos, cp: cp });
+                    rv.push({ i: index, n: c, pt: curPos, cp: cp });
+                */
 
 function RenderXYs({ xys, ...rest }: { xys: XY[]; } & React.SVGAttributes<SVGElement>) {
     rest = { r: "5", stroke: "red", fill: "orange", ...rest };
@@ -123,7 +155,8 @@ function SimpleCurve() {
     // const path2 = 'M 20,100    S 30,40 50,100    S 100,80 100,100'; //'M 2,10    S 3,4 5,10    S 10,8 10,10' * 10
     // const path2 = 'M20,20    Q80,20 80,80    Q140,20 180,180'; //'M2,2    Q8,2 8,8    Q14,2 18,18' * 10
     //const path2 = 'M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100'; //'M2,2    Q4,2 4,10    Q7,2 8,9    T 10,10    T 12,12    T14,10    T15,10    T16,10    T17,10' * 10
-    const path2 = 'M20,20    Q30,50 40,20    T60,20    T80,20';
+    //const path2 = 'M20,20    Q30,50 40,20    T60,20    T80,20';
+    const path2 = 'M20,20   L10,10   T30,50 40,20    T60,20    T80,20';
 
     const tuples: SvgTuple[] = parsePathString(path2);
     const tuplesAbs = pathToAbsolute(tuples);
