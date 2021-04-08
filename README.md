@@ -1,5 +1,7 @@
 ### About
 
+Blooming generator experiments.
+
 ### Credits and references
 
 * [tachyons: debug utilities](http://tachyons.io/docs/debug/)
