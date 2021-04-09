@@ -1,19 +1,19 @@
 export type XY = {
     x: number;
     y: number;
-}
+};
 
 export type CXY = {
     pt: XY; // point
     cp: XY; // control point
     i: number; // SvgTuple index, as backref to SvgTuple[]
     n: string; // point command name
-}
+};
 
 export type WH = { // Width and Height
     w: number;
     h: number;
-}
+};
 
 /*
 type PathM = 'M' | 'm';                         // MoveTo
@@ -56,7 +56,7 @@ export function parsePathString(pathString: string): SvgTuple[] {
         return [];
     }
 
-    let paramCounts = {a: 7, c: 6, o: 2, h: 1, l: 2, m: 2, r: 4, q: 4, s: 4, t: 2, v: 1, u: 3, z: 0};
+    let paramCounts = { a: 7, c: 6, o: 2, h: 1, l: 2, m: 2, r: 4, q: 4, s: 4, t: 2, v: 1, u: 3, z: 0 };
     let data: any[] = [];
     let positions: number[] = [];
 
@@ -294,9 +294,9 @@ export function getPoints(tuplesAbs: SvgTuple[]): XY[] {
 
 function endPointOfs(tuple: SvgTuple): number | undefined {
     // TODO: still not covered some cases and marked as 0.
-    let endPointOffsets = {a: 6, c: 5, o: 0, h: 0, l: 1, m: 1, r: 0, q: 3, s: 3, t: 1, v: 0, u: 0, z: 0};
+    let endPointOffsets = { a: 6, c: 5, o: 0, h: 0, l: 1, m: 1, r: 0, q: 3, s: 3, t: 1, v: 0, u: 0, z: 0 };
     return endPointOffsets[tuple[0].toLowerCase() as keyof typeof endPointOffsets];
-} 
+}
 
 export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     let rv: CXY[] = [];

@@ -1,7 +1,10 @@
-import { defineConfig } from 'vite'
-import reactRefresh from '@vitejs/plugin-react-refresh'
+import { defineConfig } from 'vite';
+import reactRefresh from '@vitejs/plugin-react-refresh';
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [reactRefresh()]
-})
+export default (command) => {
+    return defineConfig({
+        base: command === 'build' ? '/blooming-gen/' : '',
+        plugins: [reactRefresh()]
+    });
+};
