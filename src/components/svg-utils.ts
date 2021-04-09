@@ -304,23 +304,22 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     let prevTuple: SvgTuple;
     tuplesAbs.forEach((tuple: SvgTuple, index: number, items: SvgTuple[]) => {
         let c = tuple[0];
-        let curPos: XY;
+        let curPos: XY = { x: 0, y: 0 };
         switch (c) { // abs path has only uppercase commands
             case 'M':
             case 'L':
-                prevPos = { x: tuple[1], y: tuple[2] };
+                curPos = { x: tuple[1], y: tuple[2] };
                 break;
             case 'H':
-                prevPos = { x: tuple[1], y: prevPos.y };
+                curPos = { x: tuple[1], y: prevPos.y };
                 break;
             case 'V':
-                prevPos = { x: prevPos.x, y: tuple[1] };
+                curPos = { x: prevPos.x, y: tuple[1] };
                 break;
             case 'C':
                 curPos = { x: tuple[5], y: tuple[6] };
                 rv.push({ i: index, n: c, pt: curPos, cp: { x: tuple[1], y: tuple[2] } });
                 rv.push({ i: index, n: c, pt: curPos, cp: { x: tuple[3], y: tuple[4] } });
-                prevPos = curPos;
                 break;
             case 'S': {
                 curPos = { x: tuple[3], y: tuple[4] };
@@ -333,7 +332,6 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                         break;
                 }
                 rv.push({ i: index, n: c, pt: curPos, cp: { x: tuple[1], y: tuple[2] } });
-                prevPos = curPos;
                 break;
             }
             case 'Q':
@@ -341,7 +339,6 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 let cp: XY = { x: tuple[1], y: tuple[2] };
                 rv.push({ i: index, n: c, pt: prevPos, cp: cp });
                 rv.push({ i: index, n: c, pt: curPos, cp: cp });
-                prevPos = curPos;
                 break;
             case 'T': {
                 function backtrackCP(i: number, cp: XY): XY {
@@ -379,15 +376,14 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 curPos = { x: tuple[1], y: tuple[2] };
                 rv.push({ i: index, n: c, pt: prevPos, cp: cp });
                 rv.push({ i: index, n: c, pt: curPos, cp: cp });
-                prevPos = curPos;
                 break;
             }
             case 'A':
                 //rv.push({ i: index, x: tuple[1], y: tuple[2] });
                 curPos = { x: tuple[6], y: tuple[7] };
-                prevPos = curPos;
                 break;
         }
+        prevPos = curPos;
         prevTuple = tuple;
     });
     return rv;
