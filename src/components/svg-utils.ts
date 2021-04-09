@@ -304,7 +304,29 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     let endPoints: XY[] = []; // End points history
     let prevTuple: SvgTuple;
 
-    //TODO: function getPrevStartPoint(type: 'C' | 'S' | 'Q' | 'T', index: number): XY {}
+    function getEndPointOfC(items: SvgTuple[], index: number): number {
+        for (let i = index, st: SvgTuple; i > 0; i--) {
+            if ((st = items[i]) && st[0] === 'C' || st[0] !== 'S') {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    function getEndPointOfQ(items: SvgTuple[], index: number): number {
+        for (let i = index, st: SvgTuple; i > 0; i--) {
+            if ((st = items[i]) && st[0] === 'Q' || st[0] !== 'T') {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    // function getEndPoint(type: 'C' | 'S' | 'Q' | 'T', index: number, items: SvgTuple[]): number {
+    //     for (let i = index; i >= 0; i--) {
+    //         let st = items[i];
+    //     }
+    // }
 
     tuplesAbs.forEach((tuple: SvgTuple, index: number, items: SvgTuple[]) => {
         let c = tuple[0];
