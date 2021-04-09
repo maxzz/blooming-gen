@@ -301,6 +301,7 @@ function endPointOfs(tuple: SvgTuple): number | undefined {
 export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     let rv: CXY[] = [];
     let prevPos: XY = { x: 0, y: 0 };
+    let history: XY[] = [];
     let prevTuple: SvgTuple;
     tuplesAbs.forEach((tuple: SvgTuple, index: number, items: SvgTuple[]) => {
         let c = tuple[0];
@@ -383,7 +384,7 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 curPos = { x: tuple[6], y: tuple[7] };
                 break;
         }
-        prevPos = curPos;
+        history.push(prevPos = curPos);
         prevTuple = tuple;
     });
     return rv;
