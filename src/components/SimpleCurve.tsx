@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MarkGrid from './SvgGrid';
-import { CXY, getControlPoints, getPoints, parsePathString, pathToAbsolute, printCXYs, printTuples, SvgTuple, XY } from './svg-utils';
+import { ControlPoint, getControlPoints, getPoints, parsePathString, pathToAbsolute, printControlPoints, printTuples, SvgTuple, XY } from './svg-utils';
 
-function RenderXYs({ xys, ...rest }: { xys: XY[]; } & React.SVGAttributes<SVGElement>) {
+function RenderPoints({ pts, ...rest }: { pts: XY[]; } & React.SVGAttributes<SVGElement>) {
     rest = { r: "5", stroke: "red", fill: "orange", ...rest };
     return (<>
-        {xys.map((xy, index) => <React.Fragment key={index}>
+        {pts.map((xy, index) => <React.Fragment key={index}>
             <circle cx={xy.x} cy={xy.y} {...rest}>
                 <title>{index}: x:{xy.x} y: {xy.y}</title>
             </circle>
@@ -15,10 +15,10 @@ function RenderXYs({ xys, ...rest }: { xys: XY[]; } & React.SVGAttributes<SVGEle
     </>);
 }
 
-function RenderCXYs({ cxys, ...rest }: { cxys: CXY[]; } & React.SVGAttributes<SVGElement>) {
+function RenderCpts({ cpts, ...rest }: { cpts: ControlPoint[]; } & React.SVGAttributes<SVGElement>) {
     rest = { r: "2", stroke: "maroon", strokeWidth: '.4', fill: "tomato", ...rest };
     return (<>
-        {cxys.map((cxy, index) =>
+        {cpts.map((cxy, index) =>
             <React.Fragment key={index}>
                 <circle cx={cxy.cp.x} cy={cxy.cp.y} {...rest}>
                     <title>Command {cxy.n}: {cxy.i}: x:{cxy.cp.x} y: {cxy.cp.y}</title>
@@ -51,10 +51,10 @@ function SimpleCurve() {
     const tuples: SvgTuple[] = parsePathString(path2);
     const tuplesAbs = pathToAbsolute(tuples);
     const points: XY[] = getPoints(tuplesAbs);
-    const cpoints: CXY[] = getControlPoints(tuplesAbs);
+    const cpoints: ControlPoint[] = getControlPoints(tuplesAbs);
 
-    printTuples(tuplesAbs);
-    //printCXYs(cpoints);
+    //printTuples(tuplesAbs);
+    //printControlPoints(cpoints);
 
     return (
         <div className="pt-4 max-w-md mx-auto bg-indigo-100">
@@ -64,8 +64,8 @@ function SimpleCurve() {
                     <circle cx="0" cy="0" r="2" fill="violet" />
                     <text x="-80" y="-5" fontSize="6.5">{path2}</text>
 
-                    <RenderXYs xys={points} />
-                    <RenderCXYs cxys={cpoints} />
+                    <RenderPoints pts={points} />
+                    <RenderCpts cpts={cpoints} />
                     {/* <path d={path1} fill="none" stroke="red" /> */}
                     <path d={path2} fill="none" stroke="red" />
                 </svg>

@@ -3,7 +3,7 @@ export type XY = {
     y: number;
 };
 
-export type CXY = {
+export type ControlPoint = {
     pt: XY; // point
     cp: XY; // control point
     i: number; // SvgTuple index, as backref to SvgTuple[]
@@ -43,8 +43,8 @@ export function printTuples(tuplesAbs: SvgTuple[]) {
     console.log('----------------- abs tuples: -----------------', `\n${tuplesAbs.map((tuple => JSON.stringify(tuple))).join('\n')}\n-----------------`);
 }
 
-export function printCXYs(cxys: CXY[]) {
-    console.log('----------------- abs tuples: -----------------', `\n${cxys.map((cxy => JSON.stringify(cxy))).join('\n')}\n-----------------`);
+export function printControlPoints(cps: ControlPoint[]) {
+    console.log('----------------- abs tuples: -----------------', `\n${cps.map((cxy => JSON.stringify(cxy))).join('\n')}\n-----------------`);
 }
 
 const reSpaces = '\x09\x0a\x0b\x0c\x0d\x20\xa0\u1680\u180e\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u202f\u205f\u3000\u2028\u2029';
@@ -282,8 +282,8 @@ export function getPoints(tuplesAbs: SvgTuple[]): XY[] {
     return rv;
 }
 
-export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
-    let rv: CXY[] = [];
+export function getControlPoints(tuplesAbs: SvgTuple[]): ControlPoint[] {
+    let rv: ControlPoint[] = [];
     let prevEndPoint: XY = { x: 0, y: 0 };
     let endPoints: XY[] = []; // End points history
 
