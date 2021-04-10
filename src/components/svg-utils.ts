@@ -312,8 +312,8 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 switch (prevTuple[0]) {
                     case 'C':
                     case 'S':
-                        let ofs = prevTuple[0] === 'C' ? 3 : 1;
-                        let cp1: XY = { x: 2 * prevEndPoint.x - prevTuple[ofs], y: 2 * prevEndPoint.y - prevTuple[ofs + 1] }; // reflection
+                        let cp2Ofs = prevTuple[0] === 'C' ? 3 : 1;
+                        let cp1: XY = { x: 2 * prevEndPoint.x - prevTuple[cp2Ofs], y: 2 * prevEndPoint.y - prevTuple[cp2Ofs + 1] }; // reflection
                         rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp1 });
                         break;
                 }
@@ -327,7 +327,7 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 rv.push({ i: index, n: c, pt: curEndPoint, cp: cp });
                 break;
             case 'T': {
-                function backtrackCP(i: number, pt: XY): XY { // pt - end point for i; returns reflected CP.
+                function backtrackCp(i: number, pt: XY): XY { // pt - end point for i; returns reflected cp.
                     let prevTuple = items[i - 1];
                     if (prevTuple) {
                         if (prevTuple[0] === 'Q') { // Q,  x1,y1,  x,y
@@ -337,7 +337,7 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                             };
                         }
                         if (prevTuple[0] === 'T') { // T, x,y
-                            let reflectedCP = backtrackCP(i - 1, endPoints[i - 2] || pt);
+                            let reflectedCP = backtrackCp(i - 1, endPoints[i - 2] || pt);
                             return {
                                 x: 2 * pt.x - reflectedCP.x,
                                 y: 2 * pt.y - reflectedCP.y,
@@ -346,8 +346,7 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                     }
                     return pt;
                 }
-                let cp: XY = backtrackCP(index, prevEndPoint);
-
+                let cp: XY = backtrackCp(index, prevEndPoint);
                 curEndPoint = { x: tuple[1], y: tuple[2] };
                 rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp });
                 rv.push({ i: index, n: c, pt: curEndPoint, cp: cp });
