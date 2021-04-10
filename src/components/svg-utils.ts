@@ -362,36 +362,58 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                 break;
             case 'T': {
                 function backtrackCP(i: number, pt: XY): XY {
+                    // 0. pt - end point for i; returns reflected CP.
                     let prevTuple = items[i - 1];
-                    if (!prevTuple) {
-                        return pt;
-                    }
-                    if (prevTuple[0] === 'Q') { // Q, x1, y1, x, y
-                        return {
-                            x: 2 * pt.x - prevTuple[1],
-                            y: 2 * pt.y - prevTuple[2],
-                        };
-                    }
-                    if (prevTuple[0] === 'T') { // T, x, y
-                        let prevToPrevPos: XY = { x: 0, y: 0 };
-
-                        let prevToPrev = items[i - 2];
-                        if (prevToPrev) {
-                            let ofs = endPointOfs(prevToPrev);
-                            if (ofs) {
-                                prevToPrevPos = { x: prevToPrev[ofs], y: prevToPrev[ofs + 1] };
-                            }
+                    if (prevTuple) {
+                        if (prevTuple[0] === 'Q') { // Q, x1, y1, x, y
+                            return {
+                                x: 2 * pt.x - prevTuple[1],
+                                y: 2 * pt.y - prevTuple[2],
+                            };
                         }
-
-                        let prevCP = backtrackCP(i - 1, prevToPrevPos);
-                        return {
-                            x: 2 * pt.x - prevCP.x,
-                            y: 2 * pt.y - prevCP.y,
-                        };
+                        if (prevTuple[0] === 'T') { // T, x, y
+                            let prevCP = backtrackCP(i - 1, endPoints[i - 2] || pt);
+                            return {
+                                x: 2 * pt.x - prevCP.x,
+                                y: 2 * pt.y - prevCP.y,
+                            };
+                        }
                     }
                     return pt;
                 }
                 let cp: XY = backtrackCP(index, prevEndPoint);
+
+                // function backtrackCP(i: number, pt: XY): XY {
+                //     let prevTuple = items[i - 1];
+                //     if (!prevTuple) {
+                //         return pt;
+                //     }
+                //     if (prevTuple[0] === 'Q') { // Q, x1, y1, x, y
+                //         return {
+                //             x: 2 * pt.x - prevTuple[1],
+                //             y: 2 * pt.y - prevTuple[2],
+                //         };
+                //     }
+                //     if (prevTuple[0] === 'T') { // T, x, y
+                //         let prevToPrevPos: XY = { x: 0, y: 0 };
+
+                //         let prevToPrev = items[i - 2];
+                //         if (prevToPrev) {
+                //             let ofs = endPointOfs(prevToPrev);
+                //             if (ofs) {
+                //                 prevToPrevPos = { x: prevToPrev[ofs], y: prevToPrev[ofs + 1] };
+                //             }
+                //         }
+
+                //         let prevCP = backtrackCP(i - 1, prevToPrevPos);
+                //         return {
+                //             x: 2 * pt.x - prevCP.x,
+                //             y: 2 * pt.y - prevCP.y,
+                //         };
+                //     }
+                //     return pt;
+                // }
+                // let cp: XY = backtrackCP(index, prevEndPoint);
 
                 curEndPoint = { x: tuple[1], y: tuple[2] };
                 rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp });
