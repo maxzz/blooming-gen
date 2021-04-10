@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import MarkGrid from './SvgGrid';
 import { ControlPoint, CpType, getControlPoints, getPoints, parsePathString, pathToAbsolute, printControlPoints, printTuples, SvgTuple, XY } from './svg-utils';
@@ -56,9 +56,19 @@ function SimpleCurve() {
     //printTuples(tuplesAbs);
     //printControlPoints(cpoints);
 
+    const [testPath, settestPath] = useState(path2);
+
     return (
         <div className="pt-4 max-w-md mx-auto bg-indigo-100">
-            <div className="mx-auto w-96 h-96 border border-l-0 border-t-0 border-red-300">
+
+            <div className="w-96 mb-2 mx-auto shadow-sm">
+                <input
+                    className="w-full px-2 py-2 rounded shadow-inner border border-indigo-200 text-xs text-gray-500"
+                    value={testPath} onChange={(event) => settestPath(event.target.value)}
+                />
+            </div>
+
+            <div className="w-96 h-96 mx-auto border border-l-0 border-t-0 border-red-300">
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
                     <MarkGrid x={-200} y={-200} visible={true} />
                     <circle cx="0" cy="0" r="2" fill="violet" />
