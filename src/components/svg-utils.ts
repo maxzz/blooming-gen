@@ -3,7 +3,7 @@ export type XY = {
     y: number;
 };
 
-export enum CpType { // vite does not support const enum yet
+export enum CpType { // vite does not support const enum yet, so it will use object instead of number.
     defined = 1,
     computed = 2,
 }

@@ -20,7 +20,7 @@ function RenderCpts({ cpts, ...rest }: { cpts: ControlPoint[] } & React.SVGAttri
     return (<>
         {cpts.map((cpt, index) =>
             <React.Fragment key={index}>
-                <circle cx={cpt.cp.x} cy={cpt.cp.y} {...rest} fill={cpt.t === CpType.computed ? 'green' : rest.fill}>
+                <circle cx={cpt.cp.x} cy={cpt.cp.y} {...rest} fill={cpt.t === CpType.computed ? 'none' : rest.fill}>
                     <title>Command {cpt.n}: {cpt.i}: x:{cpt.cp.x} y: {cpt.cp.y}</title>
                 </circle>
                 <line x1={cpt.pt.x} y1={cpt.pt.y} x2={cpt.cp.x} y2={cpt.cp.y} {...rest} strokeDasharray=".5 .5" />
