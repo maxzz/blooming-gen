@@ -59,16 +59,16 @@ function SimpleCurve() {
     //printControlPoints(cpoints);
 
     return (
-        <div className="pt-4 max-w-md mx-auto bg-indigo-100">
+        <div className="p-4 max-w-md mx-auto bg-indigo-100">
 
-            <div className="w-96 mb-2 mx-auto shadow-sm">
+            <div className="shadow-sm">
                 <input
                     className="w-full px-2 py-2 rounded shadow-inner border border-indigo-200 text-xs text-gray-500"
                     value={testPath} onChange={(event) => settestPath(event.target.value)}
                 />
             </div>
 
-            <div className="w-96 h-96 mx-auto border border-l-0 border-t-0 border-red-300">
+            <div className="mt-2 border border-l-0 border-t-0 border-red-300">
                 <svg className="bg-red-100" viewBox="-200 -200 400 400">
                     <MarkGrid x={-200} y={-200} visible={true} />
                     <circle cx="0" cy="0" r="2" fill="violet" />
@@ -81,8 +81,8 @@ function SimpleCurve() {
                 </svg>
             </div>
 
-            <div className="ml-8 py-4" >
-                <div className="w-72 h-72">
+            <div className="mt-4">
+                <div className="mx-auto w-32 h-32">
                     {/* <svg className="bg-red-100" viewBox="-10 -10 100 100" fill="none" stroke="green" strokeWidth=".7"> */}
                     {/* <svg className="" viewBox="-10 -10 100 100" fill="none" stroke="green" strokeWidth=".7" style={{background: 'radial-gradient(ellipse at center, #fefefe 0%, #cbeeff 100%)'}}> */}
                     <svg className="" viewBox="-10 -10 100 100" fill="none" stroke="green" strokeWidth=".7" style={{ background: 'radial-gradient(ellipse at center, #fefefe 0%, rgb(254, 226, 226) 100%)' }}>
@@ -94,6 +94,7 @@ function SimpleCurve() {
                     </svg>
                 </div>
             </div>
+            
         </div>
     );
 }
