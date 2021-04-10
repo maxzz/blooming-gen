@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MarkGrid from './SvgGrid';
-import { ControlPoint, getControlPoints, getPoints, parsePathString, pathToAbsolute, printControlPoints, printTuples, SvgTuple, XY } from './svg-utils';
+import { ControlPoint, CpType, getControlPoints, getPoints, parsePathString, pathToAbsolute, printControlPoints, printTuples, SvgTuple, XY } from './svg-utils';
 
-function RenderPoints({ pts, ...rest }: { pts: XY[]; } & React.SVGAttributes<SVGElement>) {
+function RenderPoints({ pts, ...rest }: { pts: XY[] } & React.SVGAttributes<SVGElement>) {
     rest = { r: "5", stroke: "red", fill: "orange", ...rest };
     return (<>
         {pts.map((xy, index) => <React.Fragment key={index}>
@@ -15,15 +15,15 @@ function RenderPoints({ pts, ...rest }: { pts: XY[]; } & React.SVGAttributes<SVG
     </>);
 }
 
-function RenderCpts({ cpts, ...rest }: { cpts: ControlPoint[]; } & React.SVGAttributes<SVGElement>) {
+function RenderCpts({ cpts, ...rest }: { cpts: ControlPoint[] } & React.SVGAttributes<SVGElement>) {
     rest = { r: "2", stroke: "maroon", strokeWidth: '.4', fill: "tomato", ...rest };
     return (<>
-        {cpts.map((cxy, index) =>
+        {cpts.map((cpt, index) =>
             <React.Fragment key={index}>
-                <circle cx={cxy.cp.x} cy={cxy.cp.y} {...rest}>
-                    <title>Command {cxy.n}: {cxy.i}: x:{cxy.cp.x} y: {cxy.cp.y}</title>
+                <circle cx={cpt.cp.x} cy={cpt.cp.y} {...rest} fill={cpt.t === CpType.computed ? 'green' : rest.fill}>
+                    <title>Command {cpt.n}: {cpt.i}: x:{cpt.cp.x} y: {cpt.cp.y}</title>
                 </circle>
-                <line x1={cxy.pt.x} y1={cxy.pt.y} x2={cxy.cp.x} y2={cxy.cp.y} {...rest} strokeDasharray=".5 .5" />
+                <line x1={cpt.pt.x} y1={cpt.pt.y} x2={cpt.cp.x} y2={cpt.cp.y} {...rest} strokeDasharray=".5 .5" />
             </React.Fragment>
         )}
     </>);

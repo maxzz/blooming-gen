@@ -3,11 +3,17 @@ export type XY = {
     y: number;
 };
 
+export enum CpType { // vite does not support const enum yet
+    defined = 1,
+    computed = 2,
+}
+
 export type ControlPoint = {
     pt: XY; // point
     cp: XY; // control point
     i: number; // SvgTuple index, as backref to SvgTuple[]
-    n: string; // point command name
+    n: string; // Command name associated with the control point
+    t: CpType; // Control point type
 };
 
 export type WH = { // Width and Height
@@ -303,8 +309,8 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): ControlPoint[] {
                 break;
             case 'C': // C x1,y1  x2,y2  x,y
                 curEndPoint = { x: tuple[5], y: tuple[6] };
-                rv.push({ i: index, n: c, pt: prevEndPoint, cp: { x: tuple[1], y: tuple[2] } });
-                rv.push({ i: index, n: c, pt: curEndPoint, cp: { x: tuple[3], y: tuple[4] } });
+                rv.push({ i: index, n: c, pt: prevEndPoint, cp: { x: tuple[1], y: tuple[2] }, t: CpType.defined });
+                rv.push({ i: index, n: c, pt: curEndPoint, cp: { x: tuple[3], y: tuple[4] }, t: CpType.defined });
                 break;
             case 'S': { // S x2,y2  x,y
                 curEndPoint = { x: tuple[3], y: tuple[4] };
@@ -314,17 +320,17 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): ControlPoint[] {
                     case 'S':
                         let cp2Ofs = prevTuple[0] === 'C' ? 3 : 1;
                         let cp1: XY = { x: 2 * prevEndPoint.x - prevTuple[cp2Ofs], y: 2 * prevEndPoint.y - prevTuple[cp2Ofs + 1] }; // reflection
-                        rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp1 });
+                        rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp1, t: CpType.computed });
                         break;
                 }
-                rv.push({ i: index, n: c, pt: curEndPoint, cp: { x: tuple[1], y: tuple[2] } });
+                rv.push({ i: index, n: c, pt: curEndPoint, cp: { x: tuple[1], y: tuple[2] }, t: CpType.defined });
                 break;
             }
             case 'Q':
                 curEndPoint = { x: tuple[3], y: tuple[4] };
                 let cp: XY = { x: tuple[1], y: tuple[2] };
-                rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp });
-                rv.push({ i: index, n: c, pt: curEndPoint, cp: cp });
+                rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp, t: CpType.defined });
+                rv.push({ i: index, n: c, pt: curEndPoint, cp: cp, t: CpType.defined });
                 break;
             case 'T': {
                 function backtrackCp(i: number, pt: XY): XY { // pt - end point for i; returns reflected cp.
@@ -348,8 +354,8 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): ControlPoint[] {
                 }
                 let cp: XY = backtrackCp(index, prevEndPoint);
                 curEndPoint = { x: tuple[1], y: tuple[2] };
-                rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp });
-                rv.push({ i: index, n: c, pt: curEndPoint, cp: cp });
+                rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp, t: CpType.computed });
+                rv.push({ i: index, n: c, pt: curEndPoint, cp: cp, t: CpType.computed });
                 break;
             }
             case 'A':
