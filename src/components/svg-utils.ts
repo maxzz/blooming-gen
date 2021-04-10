@@ -300,7 +300,7 @@ function endPointOfs(tuple: SvgTuple): number | undefined {
 
 export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
     let rv: CXY[] = [];
-    let prevPos: XY = { x: 0, y: 0 };
+    let prevEndPoint: XY = { x: 0, y: 0 };
     let endPoints: XY[] = []; // End points history
     let prevTuple: SvgTuple;
 
@@ -324,55 +324,55 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
 
     tuplesAbs.forEach((tuple: SvgTuple, index: number, items: SvgTuple[]) => {
         let c = tuple[0];
-        let curPos: XY = { x: 0, y: 0 };
+        let curEndPoint: XY = { x: 0, y: 0 };
         switch (c) { // abs path has only uppercase commands
             case 'M':
             case 'L':
-                curPos = { x: tuple[1], y: tuple[2] };
+                curEndPoint = { x: tuple[1], y: tuple[2] };
                 break;
             case 'H':
-                curPos = { x: tuple[1], y: prevPos.y };
+                curEndPoint = { x: tuple[1], y: prevEndPoint.y };
                 break;
             case 'V':
-                curPos = { x: prevPos.x, y: tuple[1] };
+                curEndPoint = { x: prevEndPoint.x, y: tuple[1] };
                 break;
             case 'C':
-                curPos = { x: tuple[5], y: tuple[6] };
-                rv.push({ i: index, n: c, pt: curPos, cp: { x: tuple[1], y: tuple[2] } });
-                rv.push({ i: index, n: c, pt: curPos, cp: { x: tuple[3], y: tuple[4] } });
+                curEndPoint = { x: tuple[5], y: tuple[6] };
+                rv.push({ i: index, n: c, pt: curEndPoint, cp: { x: tuple[1], y: tuple[2] } });
+                rv.push({ i: index, n: c, pt: curEndPoint, cp: { x: tuple[3], y: tuple[4] } });
                 break;
             case 'S': {
-                curPos = { x: tuple[3], y: tuple[4] };
+                curEndPoint = { x: tuple[3], y: tuple[4] };
                 switch (prevTuple[0]) {
                     case 'C':
                     case 'S':
                         let ofs = prevTuple[0] === 'C' ? 3 : 1;
-                        let prevCtrl: XY = { x: prevPos.x - (prevTuple[ofs] - prevTuple[ofs + 2]), y: prevPos.y - (prevTuple[ofs + 1] - prevTuple[ofs + 3]) }; // reflection
-                        rv.push({ i: index, n: c, pt: prevPos, cp: prevCtrl });
+                        let prevCtrl: XY = { x: prevEndPoint.x - (prevTuple[ofs] - prevTuple[ofs + 2]), y: prevEndPoint.y - (prevTuple[ofs + 1] - prevTuple[ofs + 3]) }; // reflection
+                        rv.push({ i: index, n: c, pt: prevEndPoint, cp: prevCtrl });
                         break;
                 }
-                rv.push({ i: index, n: c, pt: curPos, cp: { x: tuple[1], y: tuple[2] } });
+                rv.push({ i: index, n: c, pt: curEndPoint, cp: { x: tuple[1], y: tuple[2] } });
                 break;
             }
             case 'Q':
-                curPos = { x: tuple[3], y: tuple[4] };
+                curEndPoint = { x: tuple[3], y: tuple[4] };
                 let cp: XY = { x: tuple[1], y: tuple[2] };
-                rv.push({ i: index, n: c, pt: prevPos, cp: cp });
-                rv.push({ i: index, n: c, pt: curPos, cp: cp });
+                rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp });
+                rv.push({ i: index, n: c, pt: curEndPoint, cp: cp });
                 break;
             case 'T': {
                 function backtrackCP(i: number, pt: XY): XY {
-                    let prev = items[i - 1];
-                    if (!prev) {
+                    let prevTuple = items[i - 1];
+                    if (!prevTuple) {
                         return pt;
                     }
-                    if (prev[0] === 'Q') { // Q, x1, y1, x, y
+                    if (prevTuple[0] === 'Q') { // Q, x1, y1, x, y
                         return {
-                            x: 2 * pt.x - prev[1],
-                            y: 2 * pt.y - prev[2],
+                            x: 2 * pt.x - prevTuple[1],
+                            y: 2 * pt.y - prevTuple[2],
                         };
                     }
-                    if (prev[0] === 'T') { // T, x, y
+                    if (prevTuple[0] === 'T') { // T, x, y
                         let prevToPrevPos: XY = { x: 0, y: 0 };
 
                         let prevToPrev = items[i - 2];
@@ -391,51 +391,19 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                     }
                     return pt;
                 }
-                let cp: XY = backtrackCP(index, prevPos);
+                let cp: XY = backtrackCP(index, prevEndPoint);
 
-                // function backtrackCP(i: number, cp: XY): XY {
-                //     let prev = items[i - 1];
-                //     if (!prev) {
-                //         return cp;
-                //     }
-                //     if (prev[0] === 'Q') { // Q, x1, y1, x, y
-                //         return {
-                //             x: cp.x + (-prev[1] + cp.x),
-                //             y: cp.y + (-prev[2] + cp.y),
-                //         };
-                //     }
-                //     if (prev[0] === 'T') { // T, x, y
-                //         let prevToPrevPos: XY = { x: 0, y: 0 };
-
-                //         let prevToPrev = items[i - 2];
-                //         if (prevToPrev) {
-                //             let ofs = endPointOfs(prevToPrev);
-                //             if (ofs) {
-                //                 prevToPrevPos = { x: prevToPrev[ofs], y: prevToPrev[ofs + 1] };
-                //             }
-                //         }
-
-                //         let prevCP = backtrackCP(i - 1, prevToPrevPos);
-                //         return {
-                //             x: 2 * cp.x - prevCP.x,
-                //             y: 2 * cp.y - prevCP.y,
-                //         };
-                //     }
-                //     return cp;
-                // }
-                // let cp: XY = backtrackCP(index, prevPos);
-
-                curPos = { x: tuple[1], y: tuple[2] };
-                rv.push({ i: index, n: c, pt: prevPos, cp: cp });
-                rv.push({ i: index, n: c, pt: curPos, cp: cp });
+                curEndPoint = { x: tuple[1], y: tuple[2] };
+                rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp });
+                rv.push({ i: index, n: c, pt: curEndPoint, cp: cp });
                 break;
             }
             case 'A':
                 //rv.push({ i: index, x: tuple[1], y: tuple[2] });
-                curPos = { x: tuple[6], y: tuple[7] };
+                curEndPoint = { x: tuple[6], y: tuple[7] };
                 break;
         }
-        endPoints.push(prevPos = curPos);
+        endPoints.push(prevEndPoint = curEndPoint);
         prevTuple = tuple;
     });
     return rv;
