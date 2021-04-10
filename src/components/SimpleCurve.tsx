@@ -48,15 +48,15 @@ function SimpleCurve() {
     //const path2 = 'M20,20   L10,10   Q30,50 40,20    T60,20    T80,20';
     //const path2 = 'M20,20    Q40,20 40,100    Q70,20 80,90    T 100,100    T 120,120    T140,100    T150,100    T160,100    T170,100';
 
-    const tuples: SvgTuple[] = parsePathString(path2);
+    const [testPath, settestPath] = useState(path2);
+    
+    const tuples: SvgTuple[] = parsePathString(testPath);
     const tuplesAbs = pathToAbsolute(tuples);
     const points: XY[] = getPoints(tuplesAbs);
     const cpoints: ControlPoint[] = getControlPoints(tuplesAbs);
 
     //printTuples(tuplesAbs);
     //printControlPoints(cpoints);
-
-    const [testPath, settestPath] = useState(path2);
 
     return (
         <div className="pt-4 max-w-md mx-auto bg-indigo-100">
@@ -77,7 +77,7 @@ function SimpleCurve() {
                     <RenderPoints pts={points} />
                     <RenderCpts cpts={cpoints} />
                     {/* <path d={path1} fill="none" stroke="red" /> */}
-                    <path d={path2} fill="none" stroke="red" />
+                    <path d={testPath} fill="none" stroke="red" />
                 </svg>
             </div>
 
