@@ -313,7 +313,7 @@ export function getControlPoints(tuplesAbs: SvgTuple[]): CXY[] {
                     case 'C':
                     case 'S':
                         let ofs = prevTuple[0] === 'C' ? 3 : 1;
-                        let cp1: XY = { x: prevEndPoint.x - (prevTuple[ofs] - prevTuple[ofs + 2]), y: prevEndPoint.y - (prevTuple[ofs + 1] - prevTuple[ofs + 3]) }; // reflection
+                        let cp1: XY = { x: prevEndPoint.x - (prevTuple[ofs] - prevEndPoint.x), y: prevEndPoint.y - (prevTuple[ofs + 1] - prevEndPoint.y) }; // reflection
                         rv.push({ i: index, n: c, pt: prevEndPoint, cp: cp1 });
                         break;
                 }
